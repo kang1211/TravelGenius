@@ -12,22 +12,19 @@ $(document).ready(function() {
     }
 
 
-    // .content_box 내부에서 .local_block을 클릭했을 때의 이벤트 처리
     $('.content_box').on('click', '.local_block', function() {
-        var country = $(this).find('.country').text().trim();
-        var local = $(this).find('.local').text().trim().slice(1, -1);
         var localId = $(this).data('local-id'); // 클릭한 지역의 ID 가져오기
 
         // localId가 정상적으로 설정되어 있다면 URL 생성 및 이동
         if (localId) {
-            window.location.href = '/admin/localDetail?localId=' + localId;
+            // 서버로 해당 localId를 파라미터로 포함한 URL로 요청
+            window.location.href = '/admin/localDetail/' + localId;
         } else {
             console.error('클릭한 지역의 local-id가 정의되지 않았습니다.');
             // localId가 정의되지 않은 경우에 대한 처리
             // 예: 경고 메시지 표시 또는 오류 처리
         }
     });
-
 
 
     // 폼 제출 시 데이터 전송

@@ -27,6 +27,7 @@ public class LocalEntity {
         this.local = local;
     }
 
+
     @Override
     public String toString() {
         return "LocalEntity{" +

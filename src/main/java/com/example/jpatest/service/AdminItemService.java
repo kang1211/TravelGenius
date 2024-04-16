@@ -12,6 +12,12 @@ import javax.transaction.Transactional;
 @Service
 public class AdminItemService {
 
+    // localId에 해당하는 관광지 정보 조회 메서드 선언
+    @Transactional
+    public AdminItemEntity findItemByLocalId(Long localId) {
+        // AdminItemRepository를 사용하여 localId에 해당하는 AdminItemEntity를 조회
+        return adminItemRepository.findById((long) localId).orElse(null);
+    }
     private final AdminItemRepository adminItemRepository;
 
     @Autowired
@@ -20,11 +26,18 @@ public class AdminItemService {
     }
 
     @Transactional
-    public void saveAdminItem(AdminItemDto adminItemDto) {
+    public void saveAdminItem(AdminItemDto adminItemDto, LocalEntity localEntity) {
         // AdminItemDto를 AdminItemEntity로 변환
-        AdminItemEntity adminItemEntity = convertToEntity(adminItemDto);
+        AdminItemEntity adminItemEntity = new AdminItemEntity();
+        adminItemEntity.setImageUrl(adminItemDto.getImgUrl());
+        adminItemEntity.setTouristSpotName(adminItemDto.getTouristSpotName());
+        adminItemEntity.setAddress(adminItemDto.getAddress());
+        adminItemEntity.setContact(adminItemDto.getContact());
+        adminItemEntity.setFeatures(adminItemDto.getFeatures());
+        adminItemEntity.setBusinessHours(adminItemDto.getBusinessHours());
+        adminItemEntity.setLocal(localEntity); // LocalEntity 설정
 
-        // AdminItemEntity를 저장
+        // AdminItemEntity 저장
         adminItemRepository.save(adminItemEntity);
     }
 

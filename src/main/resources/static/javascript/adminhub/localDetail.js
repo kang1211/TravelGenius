@@ -1,6 +1,5 @@
 $(document).ready(function () {
 
-
     $('#saveModalBtn').click(function () {
         var touristSpotName = $('#touristSpotName').val();
         var address = $('input[name="address"]').val();
@@ -35,9 +34,12 @@ $(document).ready(function () {
         formData.append('features', features);
         formData.append('businessHours', JSON.stringify(businessHours)); // JSON 객체를 문자열로 변환하여 추가
 
+        // 현재 URL에서 localId 파라미터 값을 추출
+        var localId = extractLocalIdFromUrl();
+
         $.ajax({
-            type: 'POST',
-            url: '/admin/item',
+            type: 'post',
+            url: '/admin/item/' + localId,
             data: formData,
             processData: false,
             contentType: false,
@@ -59,30 +61,36 @@ $(document).ready(function () {
 
     });
 
+    function extractLocalIdFromUrl() {
+        var url = window.location.href;
+        var lastSegment = url.substr(url.lastIndexOf('/') + 1);
+        return lastSegment;
+    }
+
     function getCsrfToken() {
-            const cookies = document.cookie.split(';').map(cookie => cookie.trim());
-            const csrfCookie = cookies.find(cookie => cookie.startsWith('XSRF-TOKEN='));
+        const cookies = document.cookie.split(';').map(cookie => cookie.trim());
+        const csrfCookie = cookies.find(cookie => cookie.startsWith('XSRF-TOKEN='));
 
-            if (csrfCookie) {
-                return csrfCookie.split('=')[1];
-            } else {
-                return null; // CSRF 토큰을 찾지 못한 경우
-            }
+        if (csrfCookie) {
+            return csrfCookie.split('=')[1];
+        } else {
+            return null; // CSRF 토큰을 찾지 못한 경우
         }
+    }
 
-        function saveLocalBlocks() {
-            var localBlocks = [];
-            $('.local_block').each(function() {
-                var blockData = {};
-                blockData.imageUrl = $(this).find('img').attr('src');
-                blockData.touristSpotName = $(this).find('p').text();
-                localBlocks.push(blockData);
-            });
-            localStorage.setItem('localBlocks', JSON.stringify(localBlocks));
-        }
+    function saveLocalBlocks() {
+        var localBlocks = [];
+        $('.local_block').each(function () {
+            var blockData = {};
+            blockData.imageUrl = $(this).find('img').attr('src');
+            blockData.touristSpotName = $(this).find('p').text();
+            localBlocks.push(blockData);
+        });
+        localStorage.setItem('localBlocks', JSON.stringify(localBlocks));
+    }
 
     // 모달 열기 전에 데이터 채우기
-    $('.content_box').on('click', '.local_block', function() {
+    $('.content_box').on('click', '.local_block', function () {
         var imageUrl = $(this).find('img').attr('src');
         var touristSpotName = $(this).find('p').text();
 
@@ -93,7 +101,7 @@ $(document).ready(function () {
     });
 
     // 동적으로 생성된 삭제 버튼에 이벤트 핸들러 추가
-    $('.content_box').on('click', '.delete-btn', function() {
+    $('.content_box').on('click', '.delete-btn', function () {
         $(this).closest('.local_block').remove();
         saveLocalBlocks(); // 삭제 후 로컬 스토리지 업데이트
     });

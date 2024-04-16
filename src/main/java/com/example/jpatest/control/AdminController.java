@@ -98,14 +98,15 @@ public class AdminController {
         }
     }
 
-    @GetMapping("/localDetail/{local_id}")
-    public String showLocalDetail(@RequestParam("country") String country,
-                                  @RequestParam("local") String local,
-                                  Model model) {
-        List<AdminItemEntity> adminItemEntity = adminItemRepository.findAll();
-        System.out.println(adminItemEntity);
-        model.addAttribute("adminItemEntity", adminItemEntity);
-        return "adminhub/localDetail";
+    @GetMapping("/localDetail/{localId}")
+    public String showLocalDetail(@PathVariable Long localId, Model model) {
+        // localId를 사용하여 관광지 정보 조회
+        AdminItemEntity item = adminItemService.findItemByLocalId(localId);
+
+        // 모델에 데이터 추가
+        model.addAttribute("adminItemEntity", item);
+
+        return "adminhub/localDetail"; // Thymeleaf 템플릿 이름 반환
     }
 
     @GetMapping("/eventCustom")
@@ -147,9 +148,10 @@ public class AdminController {
 
     // 이미지를 저장하는 메서드
 
-    @PostMapping("/item")
+    @PostMapping("/item/{local_id}")
     @ResponseBody
-    public ResponseEntity<String> createAdminItem(@RequestParam("imageFile") MultipartFile imageFile,
+    public ResponseEntity<String> createAdminItem(@PathVariable("local_id") Long localId,
+                                                  @RequestParam("imageFile") MultipartFile imageFile,
                                                   @RequestParam("touristSpotName") String touristSpotName,
                                                   @RequestParam("address") String address,
                                                   @RequestParam("contact") String contact,
@@ -161,20 +163,26 @@ public class AdminController {
         }
 
         try {
+            // LocalEntity 조회
+            LocalEntity localEntity = localRepository.findById(localId)
+                    .orElseThrow(() -> new IllegalArgumentException("해당 ID에 해당하는 지역 정보를 찾을 수 없습니다."));
+
             ObjectMapper objectMapper = new ObjectMapper();
             Map<String, String> businessHours = objectMapper.readValue(businessHoursJson, new TypeReference<Map<String, String>>() {});
 
             String imageUrl = fileUploadService.saveImage(imageFile); // 이미지 저장 및 URL 반환
 
+            // AdminItemDto 생성
             AdminItemDto adminItemDto = new AdminItemDto();
-            adminItemDto.setImageUrl(imageUrl);
+            adminItemDto.setImgUrl(imageUrl);
             adminItemDto.setTouristSpotName(touristSpotName);
             adminItemDto.setAddress(address);
             adminItemDto.setContact(contact);
             adminItemDto.setFeatures(features);
             adminItemDto.setBusinessHours(businessHours);
 
-            adminItemService.saveAdminItem(adminItemDto);
+            // AdminItemService를 통해 AdminItemDto를 저장
+            adminItemService.saveAdminItem(adminItemDto, localEntity);
 
             return ResponseEntity.ok().body(imageUrl); // 이미지 URL 반환
         } catch (Exception e) {

@@ -15,7 +15,7 @@
 </head>
 
 <body>
-<form action="/admin/item" method="post" class="box" id="parentForm" object="${adminItemDto}" th:each="item:${adminItemEntity}" th:if="${adminItemEntity != null}">
+<form action="/admin/item" method="post" class="box" id="parentForm" object="${adminItemDto}">
 
     <div class="header">
         <a href="/" style="text-decoration:none;height:75px; margin-right:300px; font-size:50px; font-style:bold; color:#93EBFF;text-align:right; font-family: 'Bauhaus 93';">TravelGenius</a>
@@ -28,7 +28,7 @@
             <div class="local_block">
                 <button style="border:0;width:100%;height:100%;background:none;font-size:50px;display:flex;justify-content:center;align-items:center;" type="button" class="btn btn-primary open-modal" data-bs-toggle="modal" data-bs-target="#myModal">+</button>
             </div>
-            <div class="local_block" th:style="'background-image: url(' + ${item.imgUrl} + ');'">
+            <div class="local_block" th:style="'background-image: url(' + ${item.imgUrl} + ');'" th:each="item:${adminItemEntity}" th:if="${adminItemEntity != null}">
                 <p th:text="${touristSpotName}" style="background:black;font-size:30px;color:white;text-align:center;"></p>
             </div>
         </div>
