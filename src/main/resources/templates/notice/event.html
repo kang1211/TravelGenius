@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragment/basic}">
+
+<th:block layout:fragment="css">
+    <link rel="stylesheet" href="/css/notice/event.css">
+
+</th:block>
+
+<th:block layout:fragment="script">
+    <script>
+        $(document).ready(function() {
+            var currentIndex = 0;
+            var imgBoxes = $('.img-box');
+            var totalBoxes = imgBoxes.length;
+            var visibleBoxCount = 5; // 한 번에 보이는 이미지 박스의 수
+
+            $('#slide-right').click(function() {
+                if (currentIndex + visibleBoxCount < totalBoxes) {
+                    currentIndex++;
+                    updateVisibleBoxes();
+                }
+            });
+
+            $('#slide-left').click(function() {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    updateVisibleBoxes();
+                }
+            });
+
+            function updateVisibleBoxes() {
+                imgBoxes.each(function(index) {
+                    if (index >= currentIndex && index < currentIndex + visibleBoxCount) {
+                        $(this).css('display', 'block');
+                    } else {
+                        $(this).css('display', 'none');
+                    }
+                });
+            }
+
+            // 초기에 보여지는 이미지 박스 설정
+            updateVisibleBoxes();
+        });
+    </script>
+</th:block>
+<div layout:fragment="content" id="box">
+
+    <div class="wrapper">
+        <div class="notice-menu">
+            <span>
+                <a th:href="@{/event}">이벤트</a>
+            </span>
+            <span>
+                <a th:href="@{/members/login}">안내사항</a>
+            </span>
+            <span>
+                <a th:href="@{/board/help}">문의사항</a>
+            </span>
+            <span>
+                <a th:href="@{/members/login}">공유 게시판</a>
+            </span>
+        </div>
+
+
+        <!--        테이블 만들기-->
+        <!-- 게시판 테이블 -->
+        <div class="img-menu">
+
+            <i class="bi bi-arrow-left-square" id="slide-left"></i>
+
+            <div class="img-box" style="background-image: url('/image/image1.jpg');">SNS 이벤트</div>
+            <div class="img-box" style="background-image: url('/image/image1.jpg');">호텔 쿠폰</div>
+            <div class="img-box" style="background-image: url('/image/image1.jpg');">항공권 할인</div>
+            <div class="img-box" style="background-image: url('/image/home.jpg');">공유 이벤트</div>
+            <div class="img-box" style="background-image: url('/image/image1.jpg');">치킨 쿠폰 이벤트</div>
+            <div class="img-box" style="background-image: url('/image/image1.jpg');"></div>
+            <div class="img-box" style="background-image: url('/image/home.jpg');"></div>
+
+            <!-- 이벤트 이미지 박스 -->
+
+            <div th:if="${events != null}" th:each="event : ${events}" class="img-box" th:style="'background-image: url(' + ${event.imgUrl} + ');'">
+                <span th:text="${event.content}">이벤트</span>
+            </div>
+            <i class="bi bi-arrow-right-square" id="slide-right"></i>
+
+        </div>
+
+    </div>
+
+</div>
+</html>
