@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.HashMap;
 import java.util.Map;
 
 @Getter
@@ -32,9 +33,11 @@ public class AdminItemEntity {
     @Column(name = "features")
     private String features;
 
-    @Column(name = "business_hours", columnDefinition = "TEXT")
-    @Convert(converter = com.example.jpatest.Converter.MapToJsonConverter.class)
-    private Map<String, String> businessHours;
+    @ElementCollection
+    @CollectionTable(name = "admin_item_business_hours", joinColumns = @JoinColumn(name = "admin_item_id"))
+    @MapKeyColumn(name = "day_of_week")
+    @Column(name = "hours_of_operation")
+    private Map<String, String> businessHours = new HashMap<>();
 
     @Column(name = "img_url")
     private String imgUrl; // 이미지 경로

@@ -23,7 +23,6 @@ public class AdminItemService {
         this.adminItemRepository = adminItemRepository;
         this.localRepository = localRepository;
     }
-
     // Method to find all AdminItemEntity objects
     public List<AdminItemEntity> findAll() {
         return adminItemRepository.findAll();
@@ -35,10 +34,6 @@ public class AdminItemService {
         if (optionalLocalEntity.isPresent()) {
             LocalEntity localEntity = optionalLocalEntity.get();
 
-            AdminItemEntity adminItemEntity = convertToEntity(adminItemDto);
-            adminItemEntity.setLocal(localEntity); // Set localEntity directly
-
-            adminItemRepository.save(adminItemEntity);
         } else {
             throw new RuntimeException("LocalEntity not found with id: " + localId);
         }
@@ -54,16 +49,4 @@ public class AdminItemService {
                 .orElseThrow(() -> new RuntimeException("Item not found with id: " + itemId));
     }
 
-    private AdminItemEntity convertToEntity(AdminItemDto adminItemDto) {
-        AdminItemEntity adminItemEntity = new AdminItemEntity();
-        adminItemEntity.setImgUrl(adminItemDto.getImgUrl());
-        adminItemEntity.setTouristSpotName(adminItemDto.getTouristSpotName());
-        adminItemEntity.setAddress(adminItemDto.getAddress());
-        adminItemEntity.setContact(adminItemDto.getContact());
-        adminItemEntity.setFeatures(adminItemDto.getFeatures());
-        adminItemEntity.setBusinessHours(adminItemDto.getBusinessHours());
-        // 필요한 다른 필드들도 설정
-
-        return adminItemEntity;
-    }
 }

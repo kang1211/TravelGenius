@@ -157,11 +157,18 @@ public class AdminController {
 
     @PostMapping(value = "/item", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
-    public ResponseEntity<String> createAdminItem(@ModelAttribute AdminItemDto adminItemDto, @RequestParam("imageFile") MultipartFile imageFile, Long localEntityId, Model model) {
+    public ResponseEntity<String> createAdminItem(@ModelAttribute AdminItemDto adminItemDto,@RequestParam("Mon") String Mon,
+                                                  @RequestParam("Tue") String Tue,
+                                                  @RequestParam("Wed") String Wed,
+                                                  @RequestParam("Thu") String Thu,
+                                                  @RequestParam("Fri") String Fri,
+                                                  @RequestParam("Sat") String Sat,
+                                                  @RequestParam("Sun") String Sun,
+                                                  @RequestParam("imageFile") MultipartFile imageFile, Long localEntityId, Model model) {
         try {
             // 필수 항목이 비어 있는지 확인
             if ( adminItemDto.getTouristSpotName().isEmpty() || adminItemDto.getAddress().isEmpty() || adminItemDto.getContact().isEmpty() ||
-                 adminItemDto.getFeatures().isEmpty()) {
+                    adminItemDto.getFeatures().isEmpty()) {
                 return ResponseEntity.badRequest().body("모든 필수 항목을 입력해주세요.");
             }
             try {
@@ -169,22 +176,31 @@ public class AdminController {
                 String imgUrl = saveImage(imageFile);
                 adminItemDto.setImgUrl(imgUrl);
 
+                adminItemDto.setBusinessHours("Mon",Mon);
+                adminItemDto.setBusinessHours("Tue",Tue);
+                adminItemDto.setBusinessHours("Wed",Wed);
+                adminItemDto.setBusinessHours("Thu",Thu);
+                adminItemDto.setBusinessHours("Fri",Fri);
+                adminItemDto.setBusinessHours("Sat",Sat);
+                adminItemDto.setBusinessHours("Sun",Sun);
+
                 adminItemService.saveAdminItem(adminItemDto, localEntityId);
             }catch (Exception e) {
                 e.printStackTrace(); // 혹은 다른 로깅 방식으로 오류를 기록할 수 있습니다.
             }
             return ResponseEntity.ok().body("상품이 성공적으로 저장되었습니다.");
-        } catch (Exception e) {
+            } catch (Exception e) {
             // 오류 발생 시 오류 응답 반환
             logger.error("상품 저장 중 오류 발생: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("저장에 실패했습니다.");
         }
     }
+
     @DeleteMapping("/item/delete/{id}")
     public ResponseEntity<String> deleteItem(@PathVariable Long id) {
         try {
-                adminItemService.deleteItem(id);
-                return ResponseEntity.ok("상품이 성공적으로 삭제되었습니다.");
+            adminItemService.deleteItem(id);
+            return ResponseEntity.ok("상품이 성공적으로 삭제되었습니다.");
         } catch (Exception e) {
             logger.error("상품 삭제 중 오류 발생: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("상품 삭제에 실패했습니다.");
