@@ -24,7 +24,7 @@ public class QAdminItemEntity extends EntityPathBase<AdminItemEntity> {
 
     public final StringPath address = createString("address");
 
-    public final MapPath<String, String, StringPath> businessHours = this.<String, String, StringPath>createMap("businessHours", String.class, String.class, StringPath.class);
+    public final MapPath<String, java.util.Map<String, String>, SimplePath<java.util.Map<String, String>>> businessHours = this.<String, java.util.Map<String, String>, SimplePath<java.util.Map<String, String>>>createMap("businessHours", String.class, java.util.Map.class, SimplePath.class);
 
     public final StringPath contact = createString("contact");
 
