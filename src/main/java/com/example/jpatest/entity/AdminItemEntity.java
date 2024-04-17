@@ -1,5 +1,5 @@
-package com.example.jpatest.entity;
 
+package com.example.jpatest.entity;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -40,9 +40,17 @@ public class AdminItemEntity {
     private String imgUrl; // 이미지 경로
 
     // 이미지 URL을 가져오는 메서드
-    // 이미지 URL을 설정하는 setter 메서드
-    public void setImageUrl(String imageUrl) {
-        this.imgUrl = imageUrl;
-    }
 
+    @Override
+    public String toString() {
+        return "AdminItemEntity{" +
+                "id=" + id +
+                ", touristSpotName='" + touristSpotName + '\'' +
+                ", address='" + address + '\'' +
+                ", contact='" + contact + '\'' +
+                ", features='" + features + '\'' +
+                ", businessHours=" + businessHours +
+                ", imgUrl='" + imgUrl + '\'' +
+                '}';
+    }
 }
