@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -21,6 +22,11 @@ public class AdminItemService {
     public AdminItemService(AdminItemRepository adminItemRepository, LocalRepository localRepository) {
         this.adminItemRepository = adminItemRepository;
         this.localRepository = localRepository;
+    }
+
+    // Method to find all AdminItemEntity objects
+    public List<AdminItemEntity> findAll() {
+        return adminItemRepository.findAll();
     }
 
     @Transactional

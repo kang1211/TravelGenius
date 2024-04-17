@@ -193,6 +193,7 @@ public class AdminController {
 
     @PostMapping("/item/{id}")
     public String getItemDetails(@PathVariable Long id, Model model) {
+
         // itemId를 사용하여 데이터베이스에서 해당 아이템 정보를 조회
         AdminItemEntity item = adminItemService.findById(id);
 
@@ -200,7 +201,7 @@ public class AdminController {
         model.addAttribute("item", item);
 
         // 해당 아이템의 세부 정보를 렌더링할 Thymeleaf 템플릿 이름을 반환
-        return "adminhub/localDetail"; // 실제로 사용할 Thymeleaf 템플릿의 이름으로 수정
+        return "adminhub/localDetailShow"; // 실제로 사용할 Thymeleaf 템플릿의 이름으로 수정
     }
 
 

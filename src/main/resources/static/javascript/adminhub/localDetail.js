@@ -11,21 +11,38 @@ $(document).ready(function () {
             return null; // CSRF 토큰을 찾지 못한 경우
         }
     }
+    $('#saveModalBtn').click(function () {
+            var businessHours = {};
+            $('.day-time-entry').each(function () {
+                var day = $(this).find('label').text(); // 요일 가져오기
+                var amTime = $(this).find('input[name$="_am"]').val(); // 오전 시간 가져오기
+                var pmTime = $(this).find('input[name$="_pm"]').val(); // 오후 시간 가져오기
+                businessHours[day] = amTime + ' - ' + pmTime; // 요일과 시간을 JSON 객체에 추가
+            });
 
-    /* businessHours 맵 데이터를 폼에 전달하기 위해 input 필드 생성 */
-    var businessHours = /*[[${adminItemDto.businessHours}]]*/{};
+            var formData = new FormData();
 
-    // 각 요일에 대해 am/pm 값을 적절한 input 필드에 설정
-    for (var day in businessHours) {
-        if (businessHours.hasOwnProperty(day)) {
-            var am = businessHours[day].split(' - ')[0]; // 오전 시간
-            var pm = businessHours[day].split(' - ')[1]; // 오후 시간
+            formData.append('businessHours', JSON.stringify(businessHours)); // JSON 객체를 문자열로 변환하여 추가
 
-            // 해당 요일의 오전/오후 input 필드에 값을 설정
-            $('input[name="' + day + '_am"]').val(am);
-            $('input[name="' + day + '_pm"]').val(pm);
-        }
-    }
+            $.ajax({
+            type: 'POST',
+            url: '/admin/item',
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: {
+                'X-XSRF-TOKEN': getCsrfToken()
+            },
+            success: function (response) {
+            saveLocalBlocks(); // 로컬 스토리지 업데이트
+            },
+            error: function (xhr, status, error) {
+                console.error('Form submission failed:', error);
+                alert('저장에 실패했습니다. 다시 시도해주세요.');
+            }
+        });
+    });
+
      $('.delete-btn').on('click', function(event) {
          event.preventDefault(); // 기본 동작 중지
 
@@ -60,45 +77,6 @@ $(document).ready(function () {
              }
          });
      });
-
-    /* // 모달 저장 버튼 클릭 시 처리
-     $('#saveModalBtn').on('click', function() {
-         var formData = new FormData($('#modalForm')[0]);
-
-         // AJAX를 이용해 모달 내용을 서버에 전송
-         $.ajax({
-             url: '/admin/item',
-             method: 'POST',
-             processData: false,
-             contentType: false,
-             data: formData,
-             success: function(response) {
-                 // 성공 시 처리
-                 console.log(response);
-                 // 저장 후 화면 갱신 등 필요한 작업 수행
-                 location.reload(); // 페이지 새로고침 (예시로 사용)
-             },
-             error: function(xhr, status, error) {
-                 // 실패 시 처리
-                 console.error(xhr.responseText);
-             }
-         });
-     });*/
-
-       // `.content_box` 내의 `.block_detail` 클릭 이벤트 위임
-       $('.content_box').on('click', '.block_detail', function() {
-       var itemId = $(this).closest('.local_block').attr('data-item-id');
-
-           // itemId를 사용하여 서버로부터 해당 아이템 정보를 가져옴
-            $.get('/admin/item/' + itemId, function(data) {
-                // 서버로부터 받은 모달 컨텐츠를 모달에 적용
-                $('#myModal .modal-content').html(data);
-
-                // 모달 표시
-                $('#myModal').modal('show');
-            });
-       });
-
 
     function bindImg() {
         $("#imageInput").on("change", function () {
