@@ -101,5 +101,24 @@ $(document).ready(function () {
         });
     }
 
+    // 현재 URL에서 파라미터 값을 추출하는 함수
+    function getUrlParameter(name) {
+        name = name.replace(/[[]/, '\\[').replace(/[\]]/, '\\]');
+        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+        var results = regex.exec(location.search);
+        return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    }
+
+    var urlParams = new URLSearchParams(window.location.search);
+    var contentValue = urlParams.get('content');
+    var contentTypeInput = document.getElementById('contentType');
+    if (contentTypeInput) {
+        contentTypeInput.value = contentValue;
+    }
+
+
+
     bindImg(); // Call the function to bind image input
+
+
 });

@@ -30,7 +30,7 @@ $(document).ready(function() {
                     var country = $(this).find('.country').text().trim();
                     var local = $(this).find('.local').text().trim().slice(1, -1);
 
-                    window.location.href = '/admin/localDetail?country=' + encodeURIComponent(country) + '&local=' + encodeURIComponent(local);
+                    window.location.href = '/admin/localDetail?country=' + encodeURIComponent(country) + '&local=' + encodeURIComponent(local)+ '&content=명소';
                 });
             });
         },

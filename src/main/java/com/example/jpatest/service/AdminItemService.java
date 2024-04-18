@@ -62,6 +62,7 @@ public class AdminItemService {
         adminItemEntity.setContact(adminItemDto.getContact());
         adminItemEntity.setFeatures(adminItemDto.getFeatures());
         adminItemEntity.setBusinessHours(adminItemDto.getBusinessHours());
+        adminItemEntity.setContentType(adminItemDto.getContentType());
         // 필요한 다른 필드들도 설정
 
         return adminItemEntity;
