@@ -1,6 +1,7 @@
 package com.example.jpatest.control;
 
 import com.example.jpatest.dto.SchedulerDto;
+import com.example.jpatest.entity.AdminItemEntity;
 import com.example.jpatest.entity.LocalEntity;
 import com.example.jpatest.repository.LocalRepository;
 import com.example.jpatest.service.SchedulerService;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -56,9 +58,27 @@ public class SchedulerController {
 
 
     @PostMapping("/third")
-    public String third(Model model) {
-        SchedulerDto schedulerDto = new SchedulerDto();
-        model.addAttribute("schedulerDto", schedulerDto);
+    public String Third(Model model) {
+        // 예시로 리스트를 생성
+        List<AdminItemEntity> adminItemEntities = new ArrayList<>();
+
+        // 리스트에 데이터 추가
+        AdminItemEntity adminItemEntity1 = new AdminItemEntity();
+        adminItemEntity1.setImgUrl("url1");
+        adminItemEntity1.setTouristSpotName("Spot1");
+        adminItemEntity1.setFeatures("Features1");
+
+        AdminItemEntity adminItemEntity2 = new AdminItemEntity();
+        adminItemEntity2.setImgUrl("url2");
+        adminItemEntity2.setTouristSpotName("Spot2");
+        adminItemEntity2.setFeatures("Features2");
+
+        adminItemEntities.add(adminItemEntity1);
+        adminItemEntities.add(adminItemEntity2);
+
+        // 모델에 리스트 추가
+        model.addAttribute("adminItemEntities", adminItemEntities);
+
         return "scheduler/third";
     }
 

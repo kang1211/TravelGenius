@@ -62,28 +62,14 @@
     </div>
 
     <div style="width:11%;height:100%;background:#000A67;display:flex;justify-content:center;align-items:end;">
-      <div style="cursor:pointer;width:150px;height:80px;background-color:white;border-radius:10px;font-size:30px;font-family:LINE Seed Sans KR;font-weight:bold; display:flex;justify-content:center;align-items:center;margin-bottom:30px;">
-        <button type="button" onclick="saveSelectedLocations()" style="background-color: white; border: none; cursor: pointer;">Next</button>
+      <div style="cursor:pointer;width:150px;height:80px;background-color:white;border-radius:10px;display:flex;justify-content:center;align-items:center;margin-bottom:30px;">
+          <form th:action="@{/third}" method="POST">
+              <button type="submit" style="color:black;background:none;border:none;font-size:30px;font-family:LINE Seed Sans KR;font-weight:bold;">Next</button>
+          </form>
       </div>
     </div>
   </form>
   <script>
-    function saveSelectedLocations() {
-        // 선택된 지역들을 가져와서 hidden input에 저장
-        const selectedItems = document.querySelectorAll('#selectItem > ul > li');
-        const selectedLocations = Array.from(selectedItems).map(item => {
-            const country = item.querySelector('.C').textContent.trim();
-            const city = item.querySelector('.B').textContent.trim();
-            return `${country} ${city}`;
-        });
-
-        const selectedLocationsInput = document.getElementById('selectedLocations');
-        selectedLocationsInput.value = selectedLocations.join(', ');
-
-        // 컨트롤러로 폼 제출
-        document.querySelector('form').submit();
-    }
-
     const locationInput = document.getElementById("locationInput");
 
     // 엔터 키 입력 감지

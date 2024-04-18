@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
@@ -70,33 +71,32 @@ public class AdminController {
 
     @GetMapping("/first")
     public String itemForm(Model model) {
-        model.addAttribute("localDto",new LocalDto());
+        // 폼을 위한 빈 객체 생성
+        LocalDto localDto = new LocalDto();
+
+        // 모델에 폼 객체 추가
+        model.addAttribute("localDto", localDto);
+
+        // 모든 LocalEntity 조회
+        List<LocalEntity> allLocals = localRepository.findAll();
+
+        // 모델에 조회된 데이터 추가
+        model.addAttribute("allLocals", allLocals);
+
         return "adminhub/first"; // 상품 작성 페이지 제공
     }
 
-    @GetMapping("/getAllLocals")
-    @ResponseBody
-    public ResponseEntity<List<LocalEntity>> getAllLocals() {
-        try {
-            List<LocalEntity> locals = localRepository.findAll();
-            return ResponseEntity.ok(locals);
-        } catch (Exception e) {
-            logger.error("모든 로컬 정보를 가져오는 중 오류 발생: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
+
 
     @PostMapping("/saveLocal")
-    @ResponseBody
-    public ResponseEntity<String> saveLocal(@RequestParam("country") String country,
-                                            @RequestParam("local") String local) {
+    public ResponseEntity<String> saveLocal(@ModelAttribute LocalDto localDto) {
         try {
             // 이미 존재하는지 확인
-            if (localRepository.existsByCountryAndLocal(country, local)) {
+            if (localRepository.existsByCountryAndLocal(localDto.getCountry(), localDto.getLocal())) {
                 return ResponseEntity.badRequest().body("이미 존재하는 지역입니다.");
             }
 
-            LocalEntity newLocal = new LocalEntity(country, local);
+            LocalEntity newLocal = new LocalEntity(localDto.getCountry(), localDto.getLocal());
             localRepository.save(newLocal);
             return ResponseEntity.ok("저장되었습니다!");
         } catch (Exception e) {
@@ -104,15 +104,19 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("저장에 실패했습니다.");
         }
     }
+    @Transactional
     @PostMapping("/deleteLocal")
-    public String deleteLocalDetail(@RequestParam("country") String country,
-                                    @RequestParam("local") String local,
-                                    Model model) {
-        adminLocalService.deleteDetail(country, local);
-
-        return "adminhub/first";
+    public ResponseEntity<String> deleteLocal(@RequestParam("country") String country,
+                                              @RequestParam("local") String local) {
+        try {
+            localRepository.deleteByCountryAndLocal(country, local);
+            return ResponseEntity.ok("삭제되었습니다.");
+        } catch (Exception e) {
+            logger.error("지역 삭제 중 오류 발생: country={}, local={}", country, local, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("삭제 중 오류가 발생했습니다.");
+        }
     }
-    @GetMapping("/localDetail")
+    @PostMapping("/localDetail")
     public String showLocalDetail(@RequestParam("country") String country,
                                   @RequestParam("local") String local,
                                   @RequestParam("content") String contentType,
