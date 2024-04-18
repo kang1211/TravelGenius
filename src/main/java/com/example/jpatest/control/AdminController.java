@@ -9,6 +9,7 @@ import com.example.jpatest.repository.AdminItemRepository;
 import com.example.jpatest.repository.LocalRepository;
 import com.example.jpatest.service.AdminEventService;
 import com.example.jpatest.service.AdminItemService;
+import com.example.jpatest.service.AdminLocalService;
 import com.example.jpatest.service.FileUploadService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,17 +49,20 @@ public class AdminController {
 
     private final LocalRepository localRepository;
 
+    private final AdminLocalService adminLocalService;
 
     @Autowired
     public AdminController(AdminEventService adminEventService,
                            AdminItemService adminItemService,
                            AdminItemRepository adminItemRepository,
                            LocalRepository localRepository,
+                           AdminLocalService adminLocalService,
                            FileUploadService fileUploadService) {
         this.adminEventService = adminEventService;
         this.localRepository = localRepository;
         this.adminItemRepository = adminItemRepository;
         this.adminItemService = adminItemService;
+        this.adminLocalService = adminLocalService;
         this.fileUploadService = fileUploadService;
     }
 
@@ -100,7 +104,14 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("저장에 실패했습니다.");
         }
     }
+    @PostMapping("/deleteLocal")
+    public String deleteLocalDetail(@RequestParam("country") String country,
+                                    @RequestParam("local") String local,
+                                    Model model) {
+        adminLocalService.deleteDetail(country, local);
 
+        return "adminhub/first";
+    }
     @GetMapping("/localDetail")
     public String showLocalDetail(@RequestParam("country") String country,
                                   @RequestParam("local") String local,
