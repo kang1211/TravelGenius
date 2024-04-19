@@ -1,3 +1,57 @@
+document.addEventListener("DOMContentLoaded", () => {
+   const checkboxes = document.querySelectorAll('.location-checkbox');
+
+      checkboxes.forEach((checkbox) => {
+          checkbox.addEventListener('change', (event) => {
+              const isChecked = event.target.checked;
+              const parentDiv = event.target.closest('.contents');
+              const spotName = parentDiv.querySelector('#item_name').textContent.trim();
+              const spotIndex = parentDiv.id.split('-')[1];
+
+              if (isChecked) {
+                  const locationText = spotName;
+                  const spotCoordinates = findSpotCoordinates(spotIndex);
+
+                  if (spotCoordinates) {
+                      addMarker(spotCoordinates, locationText); // 마커 추가
+                  }
+              } else {
+                  const locationText = spotName;
+                  removeMarker(locationText); // 마커 제거
+              }
+          });
+      });
+
+    // 관광지의 ID를 사용하여 좌표를 가져오는 함수 (실제로는 여기에서 좌표를 가져오는 코드를 구현해야 함)
+    function findSpotCoordinates(index) {
+       const spotId = 'spot-1'; // 가져올 관광지의 ID
+       const spotElement = document.getElementById(spotId); // ID를 사용하여 요소 선택
+
+       if (spotElement) {
+           // 해당 ID를 갖는 요소가 존재할 경우
+           const spotName = spotElement.querySelector('#item_name').textContent.trim();
+           console.log(`선택한 관광지의 이름: ${spotName}`);
+       } else {
+           console.log(`해당 ID를 갖는 요소가 존재하지 않습니다.`);
+       }
+
+    }
+
+    // 지도에 마커를 추가하는 함수 (실제 구현에 맞게 수정 필요)
+    function addMarker(coordinates, locationText) {
+        const marker = new google.maps.Marker({
+            position: coordinates,
+            map: map,
+            title: locationText
+        });
+    }
+
+    // 지도에서 마커를 제거하는 함수 (실제 구현에 맞게 수정 필요)
+    function removeMarker(locationText) {
+        // 해당 위치의 마커를 제거하는 로직을 구현 (예: marker.setMap(null))
+        // 이 예시에서는 단순히 마커 객체를 생성만 하고 있으므로, 실제 구현에 맞게 수정 필요
+    }
+});
  let markers = []; // 핀을 관리하는 배열
  let map;
  let geocoder;

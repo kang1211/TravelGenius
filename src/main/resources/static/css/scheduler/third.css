@@ -9,6 +9,11 @@
     border-top:5px solid #267DFF;
     border-radius:10px;
 }
+#item_name{
+    padding:0;
+    margin:0;
+    font-size:20px;font-weight:bold;width:100%;color:white;overflow:none;
+}
 /* 수직 스크롤 바 스타일 */
 ::-webkit-scrollbar {
     background-color: none; /* 스크롤 바 배경색 */

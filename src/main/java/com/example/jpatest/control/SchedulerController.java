@@ -72,7 +72,7 @@ public class SchedulerController {
 
         // 모델에 리스트 추가
         model.addAttribute("adminItemEntity", adminItemEntity);
-
+        model.addAttribute("schedulerDto", schedulerDto);
 
         return "scheduler/third";
     }

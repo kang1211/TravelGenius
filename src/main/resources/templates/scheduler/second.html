@@ -12,7 +12,6 @@
 
 <th:block layout:fragment="script">
   <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
-  <script type="module"  src="/javascript/scheduler/map.js"></script>
 </th:block>
 
 <div layout:fragment="content">
@@ -66,28 +65,6 @@
       </div>
     </div>
   </form>
-  <script>
-    const locationInput = document.getElementById("locationInput");
-
-    // 엔터 키 입력 감지
-    locationInput.addEventListener("keydown", function(event) {
-        if (event.key === "Enter") {
-            // 엔터 키를 눌렀을 때 searchLocation() 함수 호출
-            searchLocation();
-        }
-    });
-
-    function searchLocation() {
-        const location = locationInput.value.trim();
-
-        if (location === "") {
-            alert("지역명을 입력하세요.");
-            return;
-        }
-
-        // 여기에 지도 검색 및 핀 추가 로직을 넣으세요
-        console.log("검색: " + location);
-    }
-  </script>
+  <script type="module"  src="/javascript/scheduler/map.js"></script>
 </div>
 </html>
