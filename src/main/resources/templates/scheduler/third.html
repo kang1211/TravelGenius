@@ -47,7 +47,7 @@
             <div id="map" style="width:650px;height:650px;margin:100px;"></div>
             <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBKfXUB5b-aS6hLNA93HhTe6UNIqXZkizs&callback=initMap&v=weekly" defer></script>
 
-            <div style="width:800px;height:100%;display:flex;justify-content:center;flex-wrap:wrap;">
+            <div style="width:800px;height:100%;display:flex;justify-content:start;flex-wrap:wrap;align-items:center;">
                 <p style="height:80px;width:100%;font-size:20px;font-family:LINE Seed Sans KR;font-weight:bold;display:flex;justify-content:center; align-items:center;color:white;">선택한 관광지</p>
                 <div id="button_item_box" style="display:flex; flex-direction:column;">
 
@@ -69,7 +69,6 @@
                 <div id="lcBox">
                     <div id="locationList">
                         <div th:each="spot : ${adminItemEntity}" th:if="${adminItemEntity != null}" class="contents" style="height:115px;width:650px; display:flex; justify-content:left; align-items:center; border-radius:10px;background-color: rgba(0, 117, 255, 0.5); margin-bottom:10px;" >
-                            <!--                                <div th:style="'background-image: url(' + ${item.imgUrl} + ');'">-->
                             <div th:style="'background-image: url(' + ${spot.imgUrl} + ');'" style="width:160px; height: 100px; background-color:white; margin:10px; border-radius:8px"></div>
                             <div style="display:flex; justify-content: padding-right:20px;width:450px;">
                                 <label th:text="${spot.touristSpotName}" style="width:100%;" for="locationCheckBox1"></label>

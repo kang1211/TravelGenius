@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.jpatest.entity.QAdminItemEntity.adminItemEntity;
+
 @Controller
 @RequestMapping("/schedulers")
 public class SchedulerController {
@@ -60,24 +62,14 @@ public class SchedulerController {
     @PostMapping("/third")
     public String Third(Model model) {
         // 예시로 리스트를 생성
-        List<AdminItemEntity> adminItemEntities = new ArrayList<>();
 
         // 리스트에 데이터 추가
-        AdminItemEntity adminItemEntity1 = new AdminItemEntity();
-        adminItemEntity1.setImgUrl("url1");
-        adminItemEntity1.setTouristSpotName("Spot1");
-        adminItemEntity1.setFeatures("Features1");
-
-        AdminItemEntity adminItemEntity2 = new AdminItemEntity();
-        adminItemEntity2.setImgUrl("url2");
-        adminItemEntity2.setTouristSpotName("Spot2");
-        adminItemEntity2.setFeatures("Features2");
-
-        adminItemEntities.add(adminItemEntity1);
-        adminItemEntities.add(adminItemEntity2);
+        AdminItemEntity adminItemEntity = new AdminItemEntity();
+        SchedulerDto schedulerDto = new SchedulerDto();
 
         // 모델에 리스트 추가
-        model.addAttribute("adminItemEntities", adminItemEntities);
+        model.addAttribute("adminItemEntity", adminItemEntity);
+        model.addAttribute("schedulerDto", schedulerDto);
 
         return "scheduler/third";
     }
