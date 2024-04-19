@@ -4,16 +4,22 @@ let geocoder;
 let selectedCities = new Set(); // 선택된 도시를 저장할 Set
 const MAX_SELECTED_CITIES = 4; // 선택 가능한 최대 도시 개수
 
-document.addEventListener("DOMContentLoaded", () => {
-    const items = document.querySelectorAll('.D'); // 모든 .D 클래스를 가진 요소를 선택합니다.
 
-    items.forEach(item => {
-        const itemId = item.textContent.trim(); // th:text 속성의 값 가져오기
-        item.setAttribute('data-local-id', itemId); // data-local-id 속성 설정
+
+document.addEventListener("DOMContentLoaded", () => {
+    initMap();
+
+    const selectItem = document.getElementById("selectItem");
+
+    selectItem.addEventListener("click", (event) => {
+        if (event.target && event.target.classList.contains("selected-item")) {
+            const locationText = event.target.getAttribute("data-location");
+            const marker = markers.find((m) => m.getTitle() === locationText);
+            const locationBlock = event.target;
+            removeMarkerAndBlock(locationText, marker, locationBlock);
+        }
     });
 });
-
-
 function initMap() {
     map = new google.maps.Map(document.getElementById("map"), {
         center: { lat: 37.5665, lng: 126.978 }, // 서울 중심 좌표
@@ -84,7 +90,6 @@ function initMap() {
         });
     });
 }
-
 function addCityToSelection(locationText,locationText2, marker) {
     if (selectedCities.has(locationText)) {
         return;
@@ -121,7 +126,6 @@ function addCityToSelection(locationText,locationText2, marker) {
     selectItem.appendChild(locationBlock);
     selectedCities.add(locationText);
 }
-
 function removeMarkerAndBlock(locationText, marker, locationBlock) {
     const index = markers.findIndex((m) => m === marker);
     if (index !== -1) {
@@ -132,18 +136,3 @@ function removeMarkerAndBlock(locationText, marker, locationBlock) {
     selectedCities.delete(locationText);
     locationBlock.remove();
 }
-
-document.addEventListener("DOMContentLoaded", () => {
-    initMap();
-
-    const selectItem = document.getElementById("selectItem");
-
-    selectItem.addEventListener("click", (event) => {
-        if (event.target && event.target.classList.contains("selected-item")) {
-            const locationText = event.target.getAttribute("data-location");
-            const marker = markers.find((m) => m.getTitle() === locationText);
-            const locationBlock = event.target;
-            removeMarkerAndBlock(locationText, marker, locationBlock);
-        }
-    });
-});

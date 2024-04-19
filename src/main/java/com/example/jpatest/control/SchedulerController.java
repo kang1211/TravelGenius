@@ -15,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,14 +33,16 @@ public class SchedulerController {
     private static final Logger logger = LoggerFactory.getLogger(SchedulerController.class);
 
     @GetMapping("/first")
-    public String first(Model model) {
+    public String first(Model model, HttpSession session) {
         SchedulerDto schedulerDto = new SchedulerDto();
+        session.setAttribute("schedulerDto", schedulerDto);
         model.addAttribute("schedulerDto", schedulerDto);
         return "scheduler/first";
     }
 
     @PostMapping("/second")
-    public String second(@ModelAttribute("schedulerDto") SchedulerDto schedulerDto, Model model) {
+    public String second(@ModelAttribute("schedulerDto") SchedulerDto schedulerDto, Model model,HttpSession session) {
+        session.setAttribute("schedulerDto", schedulerDto);
         // 모든 LocalEntity 조회
         List<LocalEntity> localEntities = localRepository.findAll();
 
@@ -48,8 +51,8 @@ public class SchedulerController {
         model.addAttribute("schedulerDto", schedulerDto);
         // schedulerDto 저장
 /*        schedulerService.saveScheduler(schedulerDto);*/
-
-        logger.info("Received schedulerDto: {}", schedulerDto);
+        System.out.println(schedulerDto.getTrip_duration_end());
+        logger.info("Received schedulerDto: {}", schedulerDto.getTrip_duration_end());
 
         // 두 번째 페이지로 리다이렉트
         return "scheduler/second";
@@ -57,9 +60,12 @@ public class SchedulerController {
 
 
     @PostMapping("/third")
-    public String Third(@ModelAttribute("schedulerDto") SchedulerDto schedulerDto, @RequestParam("localId") String localId, Model model) {
-
-
+    public String Third(@ModelAttribute("schedulerDto") SchedulerDto schedulerDto,
+                        @RequestParam("localId") String localId, Model model,
+                        HttpSession session) {
+        schedulerDto = (SchedulerDto) session.getAttribute("schedulerDto");
+        System.out.println(schedulerDto.getTrip_duration_end());
+        logger.info("Received schedulerDto: {}", schedulerDto.getTrip_duration_end());
         // 리스트에 데이터 추가
         List<AdminItemEntity> adminItemEntity = adminItemService.findBylistId(Long.parseLong(localId));
 

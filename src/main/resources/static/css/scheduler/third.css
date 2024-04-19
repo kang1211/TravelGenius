@@ -1,12 +1,13 @@
 #locationList{
     display:flex;
+    justify-content:center;
     align-items:center;
     flex-wrap:wrap;
     height:360px;width:600px;
     overflow: auto;
-    padding-top:30px;
-    padding-left:30px;
-    padding-right:30px;
+    padding-top:50px;
+    border-top:5px solid #267DFF;
+    border-radius:10px;
 }
 /* 수직 스크롤 바 스타일 */
 ::-webkit-scrollbar {
