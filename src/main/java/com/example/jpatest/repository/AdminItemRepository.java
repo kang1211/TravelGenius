@@ -14,4 +14,6 @@ public interface AdminItemRepository extends JpaRepository<AdminItemEntity, Long
     List<AdminItemEntity> findByLocal(LocalEntity localEntity);
 
     List<AdminItemEntity> findByLocalAndContentType(LocalEntity localEntity, String contentType);
+
+    List<AdminItemEntity> findByLocalId(Long localId);
 }

@@ -53,6 +53,10 @@ public class AdminItemService {
         return adminItemRepository.findById(itemId)
                 .orElseThrow(() -> new RuntimeException("Item not found with id: " + itemId));
     }
+    public List<AdminItemEntity> findBylistId(Long localId) {
+        // localId를 사용하여 데이터베이스에서 아이템 정보를 조회
+        return adminItemRepository.findByLocalId(localId);
+    }
 
     private AdminItemEntity convertToEntity(AdminItemDto adminItemDto) {
         AdminItemEntity adminItemEntity = new AdminItemEntity();

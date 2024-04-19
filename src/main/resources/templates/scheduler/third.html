@@ -12,7 +12,7 @@
 
 <th:block layout:fragment="script">
     <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
-    <script type="module"  src="/javascript/map.js"></script>
+    <script type="module"  src="/javascript/scheduler/map.js"></script>
     <!-- jQuery를 사용하여 버튼 클릭 이벤트 처리 -->
     <script>
         $(document).ready(function() {
@@ -69,7 +69,7 @@
                 <div id="lcBox">
                     <div id="locationList">
                         <div th:each="spot : ${adminItemEntity}" th:if="${adminItemEntity != null}" class="contents" style="height:115px;width:650px; display:flex; justify-content:left; align-items:center; border-radius:10px;background-color: rgba(0, 117, 255, 0.5); margin-bottom:10px;" >
-                            <div th:style="'background-image: url(' + ${spot.imgUrl} + ');'" style="width:160px; height: 100px; background-color:white; margin:10px; border-radius:8px"></div>
+                            <div style="width:160px; height: 100px; background-color:white; margin:10px; border-radius:8px"></div>
                             <div style="display:flex; justify-content: padding-right:20px;width:450px;">
                                 <label th:text="${spot.touristSpotName}" style="width:100%;" for="locationCheckBox1"></label>
                                 <p th:text="${spot.features}"></p>
