@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                 }
             });
-            // .selected-item 클릭 시 관련된 contents의 체크박스 상태 변경
+
             const locationBlock = document.querySelector(`.selected-item[data-location="${spotName}"]`);
             if (locationBlock) {
                 locationBlock.addEventListener('click', () => {
@@ -83,10 +83,6 @@ function addCityToSelection(locationText, locationId, marker) {
         hiddenInput.name = "spotId";
         hiddenInput.value = locationId;
         locationBlock.appendChild(hiddenInput);
-
-      /*  locationBlock.addEventListener("click", () => {
-            removeMarkerAndBlock(locationText, marker, locationBlock);
-        });*/
 
         selectItem.appendChild(locationBlock);
         selectedSpots.add(locationText);
