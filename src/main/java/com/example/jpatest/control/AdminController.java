@@ -116,6 +116,36 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("삭제 중 오류가 발생했습니다.");
         }
     }
+
+    @GetMapping("/localDetail")
+    public String getLocalDetail(@RequestParam("country") String country,
+                                 @RequestParam("local") String local,
+                                 @RequestParam("content") String contentType,
+                                 Model model) {
+
+        // country와 local에 해당하는 LocalEntity 찾기
+        Optional<LocalEntity> optionalLocalEntity = localRepository.findByCountryAndLocal(country, local);
+
+        if (optionalLocalEntity.isPresent()) {
+            LocalEntity localEntity = optionalLocalEntity.get();
+
+
+            // URL에 따라 contentType 결정
+            String contentType1 = determineContentType(contentType); // determineContentType 메서드 구현 필요
+
+            // localEntity와 contentType에 따라 admin item 가져오기
+            List<AdminItemEntity> adminItemEntity = adminItemRepository.findByLocalAndContentType(localEntity, contentType1);
+
+            model.addAttribute("adminItemDto", new AdminItemDto());
+            model.addAttribute("localEntity", localEntity);
+            model.addAttribute("adminItemEntity", adminItemEntity);
+
+            return "adminhub/localDetail";
+        } else {
+            // LocalEntity를 찾지 못한 경우 처리
+            return "adminhub/localDetail"; // 또는 적절한 오류 뷰 반환
+        }
+    }
     @PostMapping("/localDetail")
     public String showLocalDetail(@RequestParam("country") String country,
                                   @RequestParam("local") String local,

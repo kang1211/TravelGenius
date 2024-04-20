@@ -123,10 +123,3 @@ border-top: 5px solid #267DFF;
 ::-webkit-scrollbar-thumb:hover {
     background-color: #555;
 }
-
-#selectItem div{
-    width:100px;
-    height:100px;
-    background-color: rgba(0, 117, 255, 0.5); /* 빨간색, 녹색, 파란색, 투명도(0.5) */
-    color:white;
-}

@@ -12,50 +12,12 @@
 
 <th:block layout:fragment="script">
 <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
-<script>
-// 체크박스를 클릭할 때 이벤트 처리
-   $(document).on('change', "input[type='checkbox']", function() {
-       if ($(this).is(":checked")) {
-           var touristSpotName = $(this).closest('.contents').find('#item_name').text().trim();
-           var selectedText = '<div style="margin: 10px; font-size: 20px; font-weight: bold; color: black;">' + touristSpotName + '</div>';
-           $("#selectItem").append(selectedText);
-       } else {
-           var removedText = $(this).closest('.contents').find('#item_name').text().trim();
-           $("#selectItem div:contains('" + removedText + "')").remove();
-       }
-   });
-
-   $(document).ready(function() {
-   // "명소" 버튼 클릭 시 '명소' 타입의 관광지 목록 표시
-   $("#location1_button").click(function() {
-       $(".contents").each(function() {
-           if ($(this).attr("data-content-type") === "명소") {
-               $(this).show();
-           } else {
-               $(this).hide();
-           }
-       });
-   });
-
-   // "식당" 버튼 클릭 시 '식당' 타입의 관광지 목록 표시
-   $("#location2_button").click(function() {
-       $(".contents").each(function() {
-           if ($(this).attr("data-content-type") === "식당") {
-               $(this).show();
-           } else {
-               $(this).hide();
-           }
-       });
-   });
-
-});
-</script>
 </th:block>
 
 <div layout:fragment="content">
     <form th:action="@{/schedulers/four}" th:object="${schedulerDto}" method="post" class="box">
     <input type="hidden" id="national">
-    <input type="hidden" id="city">
+    <input type="hidden" id="spot">
     <div id="calendar" style="height:45px; width:100%;display:flex;position:absolute;top:105px;">
     <input type="text" id="input1_header" readonly th:value="${schedulerDto.trip_duration_start}" style="padding-top:8px;font-family:LINE Seed Sans KR; font-weight:bold;width:80px;text-align:center;font-size:20px;background-color:transparent;border:none;color:white;margin-left:1200px;">
     <p style="padding-top:8px;font-family:LINE Seed Sans KR; font-weight:bold;width:80px;text-align:center;font-size:20px;background-color:transparent;border:none;color:white;"> - </p>
@@ -77,7 +39,7 @@
                         <button id="location2_button" type="button" style="width:50%; height:50px; border-radius:8px;">식당</button>
                     </div>
 
-                    <div id="selectItem" style="width:600px; height:150px;display:flex;justify-content:center;align-items:center;background-color:white;">
+                    <div id="selectItem">
 
                     </div>
                 </div>
@@ -92,10 +54,11 @@
                 <div id="lcBox">
                     <div id="locationList">
                         <div th:each="spot : ${adminItemEntity}" th:if="${spot != null}" class="contents" th:attr="data-content-type=${spot.contentType}" style="height:115px;width:500px; display:flex; justify-content:left; align-items:center; border-radius:10px;background-color: rgba(0, 117, 255, 0.5); margin-bottom:10px;">
-                            <div th:style="'margin:10px; border-radius:8px; width:120px; height:100px; background-image: url(' + ${spot.imgUrl} + '); background-position:center; background-size:cover;'"></div>
-                            <div style="display:flex; justify-content:start;flex-wrap:wrap; padding-right:20px;width:450px;">
-                                <p id="item_name" th:text="${spot.touristSpotName}" for="locationCheckBox1"></p>
-                                <p th:text="${spot.features}" style="color:white;font-size:15px;padding:0;margin:0;"></p>
+                            <div class="spot-image" th:style="'margin:10px; border-radius:8px; width:120px; height:100px; background-image: url(' + ${spot.imgUrl} + '); background-position:center; background-size:cover;'"></div>
+                            <div class="spot-details" style="display:flex; justify-content:start;flex-wrap:wrap; padding-right:20px;width:450px;">
+                                <p class="spot-name" th:text="${spot.touristSpotName}" for="locationCheckBox1" th:value="${spot.id}"></p>
+                                <p class="spot-features" th:text="${spot.features}" style="color:white;font-size:15px;padding:0;margin:0;"></p>
+                                <p class="D" th:text="${spot.id}" style="display:none;"></p>
                             </div>
                             <input style="width:50px;margin: auto 0;" type="checkbox" id="locationCheckBox1" class="location-checkbox">
                         </div>
@@ -114,5 +77,69 @@
         </div>
     </form>
 <script type="module"  src="/javascript/scheduler/map2.js"></script>
+<script>
+$(document).ready(function() {
+    let currentContentType = "명소"; // 초기에는 "명소"로 설정
+
+    // 페이지가 로드되면 모든 contents 숨기기
+    $('.contents').hide();
+
+    // 초기에 선택된 contentType에 해당하는 contents만 보이기
+    showContentsByType(currentContentType);
+
+    // "명소" 버튼 클릭 시 '명소' 타입의 관광지 목록 표시
+    $("#location1_button").click(function() {
+        currentContentType = "명소";
+        showContentsByType(currentContentType);
+    });
+
+    // "식당" 버튼 클릭 시 '식당' 타입의 관광지 목록 표시
+    $("#location2_button").click(function() {
+        currentContentType = "식당";
+        showContentsByType(currentContentType);
+    });
+
+    // Enter 키 입력 시 검색 이벤트 처리
+    $('#locationInput').keypress(function(e) {
+        if (e.which === 13) { // Enter 키
+            searchLocation(currentContentType); // 현재 contentType에 따라 검색 실행
+        }
+    });
+
+    // 검색 버튼 클릭 시 검색 이벤트 처리
+    $('#searchButton').click(function() {
+        searchLocation(currentContentType); // 현재 contentType에 따라 검색 실행
+    });
+
+    function showContentsByType(contentType) {
+        // 모든 contents 숨기기
+        $('.contents').hide();
+
+        // 선택된 contentType에 해당하는 contents만 보이기
+        $(`.contents[data-content-type="${contentType}"]`).show();
+    }
+
+    function searchLocation(contentType) {
+        const searchTerm = $('#locationInput').val().trim().toLowerCase();
+
+        // 모든 contents 숨기기
+        $('.contents').hide();
+
+        // contentType에 해당하는 contents 중 검색어와 일치하는 항목만 보이기
+        $(`.contents[data-content-type="${contentType}"]`).each(function() {
+            const spotName = $(this).find('.spot-name').text().trim().toLowerCase();
+            const spotFeatures = $(this).find('.spot-features').text().trim().toLowerCase();
+            const spotParent = $(this);
+
+            if (spotName.includes(searchTerm) || spotFeatures.includes(searchTerm)) {
+                spotParent.show();
+            }
+        });
+
+        // 검색 후 입력 초기화
+        $('#locationInput').val('');
+    }
+});
+</script>
 </div>
 </html>
