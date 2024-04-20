@@ -61,20 +61,28 @@ public class SchedulerController {
 
     @PostMapping("/third")
     public String Third(@ModelAttribute("schedulerDto") SchedulerDto schedulerDto,
-                        @RequestParam("localId") String localId, Model model,
+                        @RequestParam("localId") String localIds, Model model,
                         HttpSession session) {
         schedulerDto = (SchedulerDto) session.getAttribute("schedulerDto");
         System.out.println(schedulerDto.getTrip_duration_end());
         logger.info("Received schedulerDto: {}", schedulerDto.getTrip_duration_end());
-        // 리스트에 데이터 추가
-        List<AdminItemEntity> adminItemEntity = adminItemService.findBylistId(Long.parseLong(localId));
 
+        // localIds를 쉼표(,)로 분할하여 각 localId를 추출
+        String[] localIdArray = localIds.split(",");
 
-        // 모델에 리스트 추가
-        model.addAttribute("adminItemEntity", adminItemEntity);
+        // 각 localId에 대해 관련 데이터를 가져오고 모델에 추가
+        List<AdminItemEntity> adminItemEntityList = new ArrayList<>();
+        for (String localId : localIdArray) {
+            List<AdminItemEntity> itemsForLocalId = adminItemService.findBylistId(Long.parseLong(localId));
+            adminItemEntityList.addAll(itemsForLocalId);
+        }
+
+        // 모델에 데이터 추가
+        model.addAttribute("adminItemEntity", adminItemEntityList);
         model.addAttribute("schedulerDto", schedulerDto);
 
         return "scheduler/third";
     }
+
 
 }
