@@ -73,6 +73,19 @@ public class SchedulerController {
             // localIds를 쉼표(,)로 분할하여 각 localId를 추출합니다.
             String[] localIdArray = localIds.split(",");
 
+            // localIdArray의 첫 번째 localId로 초기 지도 좌표 설정
+            if (localIdArray.length > 0) {
+                Long firstLocalId = Long.parseLong(localIdArray[0]);
+                LocalEntity initialLocal = localRepository.findById(firstLocalId).orElse(null);
+
+                if (initialLocal != null) {
+                    // initialLocal 정보를 기반으로 지도의 초기 좌표 설정
+                    model.addAttribute("initialLocal", initialLocal); // 전체 LocalEntity 객체를 추가합니다.
+                    System.out.println("------------------------------------------------------");
+                    System.out.println(initialLocal); // LocalEntity 객체의 전체 정보 출력
+                }
+            }
+
             // 각 localId에 해당하는 관련 데이터를 가져와서 모델에 추가합니다.
             List<AdminItemEntity> adminItemEntityList = new ArrayList<>();
             for (String localId : localIdArray) {
@@ -88,12 +101,14 @@ public class SchedulerController {
             session.setAttribute("localIds", localIds); // localIds는 쉼표(,)로 구분된 문자열입니다.
 
             return "scheduler/third";
-        }catch(Exception e){
+        } catch (Exception e) {
             // 오류 발생 시 예외 처리
             System.out.println("Error occurred: " + e.getMessage());
             return "redirect:/second";
         }
     }
+
+
 
     @PostMapping("/fourth")
     public String Fourth(@ModelAttribute("schedulerDto") SchedulerDto schedulerDto,
@@ -106,6 +121,19 @@ public class SchedulerController {
             // 세션에서 localIds 배열을 가져옴
             String localIds = (String) session.getAttribute("localIds");
             String[] localIdArray = localIds.split(",");
+
+            // localIdArray의 첫 번째 localId로 초기 지도 좌표 설정
+            if (localIdArray.length > 0) {
+                Long firstLocalId = Long.parseLong(localIdArray[0]);
+                LocalEntity initialLocal = localRepository.findById(firstLocalId).orElse(null);
+
+                if (initialLocal != null) {
+                    // initialLocal 정보를 기반으로 지도의 초기 좌표 설정
+                    model.addAttribute("initialLocal", initialLocal); // 전체 LocalEntity 객체를 추가합니다.
+                    System.out.println("------------------------------------------------------");
+                    System.out.println(initialLocal); // LocalEntity 객체의 전체 정보 출력
+                }
+            }
 
             // 각 localId에 대해 관련 데이터를 가져오고 모델에 추가
             List<AdminItemEntity> adminItemEntityList = new ArrayList<>();
