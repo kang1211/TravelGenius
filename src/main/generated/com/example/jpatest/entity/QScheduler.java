@@ -7,7 +7,6 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
-import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -20,8 +19,6 @@ public class QScheduler extends EntityPathBase<Scheduler> {
 
     public static final QScheduler scheduler = new QScheduler("scheduler");
 
-    public final ListPath<Long, NumberPath<Long>> adminItemIds = this.<Long, NumberPath<Long>>createList("adminItemIds", Long.class, NumberPath.class, PathInits.DIRECT2);
-
     public final StringPath arrivalHour = createString("arrivalHour");
 
     public final StringPath arrivalMinute = createString("arrivalMinute");
@@ -32,7 +29,11 @@ public class QScheduler extends EntityPathBase<Scheduler> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final ListPath<Long, NumberPath<Long>> localIds = this.<Long, NumberPath<Long>>createList("localIds", Long.class, NumberPath.class, PathInits.DIRECT2);
+    public final StringPath localId = createString("localId");
+
+    public final StringPath spotId = createString("spotId");
+
+    public final StringPath stayId = createString("stayId");
 
     public final StringPath trip_duration_end = createString("trip_duration_end");
 

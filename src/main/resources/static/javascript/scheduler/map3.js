@@ -23,12 +23,9 @@ function initMap(initialLocation) {
         geocoder.geocode({ address: locationText }, (results, status) => {
             if (status === "OK" && results && results.length > 0) {
                 const location = results[0].geometry.location;
-
                 // 검색된 위치를 지도의 중심으로 설정
                 map.setCenter(location);
-
-                // 마커를 markers 배열에 추가
-                markers.push(marker);
+                geocodeAndAddBlueMarker(locationText);
             } else {
                 console.error("위치를 찾을 수 없습니다.");
                 // 초기 위치 설정에 실패한 경우, 지도는 서울 시청을 중심으로 유지됩니다.
@@ -38,13 +35,13 @@ function initMap(initialLocation) {
 
     const locationItems = document.querySelectorAll('.contents');
 
-    locationItems.forEach((spot) => {
-        const checkbox = spot.querySelector('.location-checkbox');
-        const spotName = spot.querySelector('.spot-name').textContent;
-        const spotId = spot.querySelector('.D').textContent.trim();
+    locationItems.forEach((stay) => {
+        const checkbox = stay.querySelector('.location-checkbox');
+        const stayName = stay.querySelector('.stay-name').textContent;
+        const stayId = stay.querySelector('.D').textContent.trim();
 
         checkbox.addEventListener('change', (event) => {
-            const locationText = spotName;
+            const locationText = stayName;
 
             if (event.target.checked) {
                 if (selectedSpots.has(locationText)) {
@@ -64,7 +61,7 @@ function initMap(initialLocation) {
                         });
 
                         markers.push(marker);
-                        addCityToSelection(locationText, spotId, marker);
+                        addCityToSelection(locationText, stayId, marker);
                         map.panTo(location);
                     } else {
                         console.error("위치를 찾을 수 없습니다.");
@@ -79,11 +76,11 @@ function initMap(initialLocation) {
             }
         });
 
-        const locationBlock = document.querySelector(`.selected-item[data-location="${spotName}"]`);
+        const locationBlock = document.querySelector(`.selected-item[data-location="${stayName}"]`);
         if (locationBlock) {
             locationBlock.addEventListener('click', () => {
                 checkbox.checked = false; // 체크박스 상태 변경
-                removeMarkerAndBlock(spotName, markers.find((m) => m.getTitle() === spotName), locationBlock);
+                removeMarkerAndBlock(stayName, markers.find((m) => m.getTitle() === spotName), locationBlock);
             });
         }
     });
@@ -106,12 +103,6 @@ function addCityToSelection(locationText, locationId, marker) {
         hiddenInput.name = "spotId";
         hiddenInput.value = locationId;
         locationBlock.appendChild(hiddenInput);
-
-        const hiddenInput2 = document.createElement("input");
-        hiddenInput2.type = "hidden";
-        hiddenInput2.name = "spotMark";
-        hiddenInput2.value = locationText;
-        locationBlock.appendChild(hiddenInput2);
 
         selectItem.appendChild(locationBlock);
         selectedSpots.add(locationText);

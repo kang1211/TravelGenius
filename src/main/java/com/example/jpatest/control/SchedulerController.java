@@ -1,6 +1,7 @@
 package com.example.jpatest.control;
 
 import com.example.jpatest.dto.SchedulerDto;
+import com.example.jpatest.entity.AdminEventEntity;
 import com.example.jpatest.entity.AdminItemEntity;
 import com.example.jpatest.entity.LocalEntity;
 import com.example.jpatest.entity.Scheduler;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -43,17 +45,16 @@ public class SchedulerController {
     @PostMapping("/second")
     public String second(@ModelAttribute("schedulerDto") SchedulerDto schedulerDto, Model model,HttpSession session) {
         try {
-            session.setAttribute("schedulerDto", schedulerDto);
-
             List<LocalEntity> localEntities = localRepository.findAll();
 
             // 조회된 데이터를 모델에 추가
             model.addAttribute("localEntities", localEntities);
             model.addAttribute("schedulerDto", schedulerDto);
-            // schedulerDto 저장
-            /*        schedulerService.saveScheduler(schedulerDto);*/
-            System.out.println(schedulerDto.getTrip_duration_end());
+            session.setAttribute("schedulerDto", schedulerDto);
             logger.info("Received schedulerDto: {}", schedulerDto.getTrip_duration_end());
+
+            System.out.println("--------------------------------------------------------");
+            System.out.println(schedulerDto.getTrip_duration_end());
 
             // 두 번째 페이지로 리다이렉트
             return "scheduler/second";
@@ -81,8 +82,6 @@ public class SchedulerController {
                 if (initialLocal != null) {
                     // initialLocal 정보를 기반으로 지도의 초기 좌표 설정
                     model.addAttribute("initialLocal", initialLocal); // 전체 LocalEntity 객체를 추가합니다.
-                    System.out.println("------------------------------------------------------");
-                    System.out.println(initialLocal); // LocalEntity 객체의 전체 정보 출력
                 }
             }
 
@@ -97,8 +96,12 @@ public class SchedulerController {
             model.addAttribute("adminItemEntity", adminItemEntityList);
             model.addAttribute("schedulerDto", schedulerDto);
 
-            // 세션에 localIds를 저장합니다.
+            // 세션에 저장합니다.
             session.setAttribute("localIds", localIds); // localIds는 쉼표(,)로 구분된 문자열입니다.
+            session.setAttribute("schedulerDto", schedulerDto);
+
+            System.out.println(localIds);
+            System.out.println(schedulerDto.getTrip_duration_end());
 
             return "scheduler/third";
         } catch (Exception e) {
@@ -113,9 +116,8 @@ public class SchedulerController {
     @PostMapping("/fourth")
     public String Fourth(@ModelAttribute("schedulerDto") SchedulerDto schedulerDto,
                          @RequestParam("spotId") String spotIds,
+                         @RequestParam("spotMark") String spotMarks,
                          Model model, HttpSession session) {
-
-        try {
             schedulerDto = (SchedulerDto) session.getAttribute("schedulerDto");
 
             // 세션에서 localIds 배열을 가져옴
@@ -130,8 +132,6 @@ public class SchedulerController {
                 if (initialLocal != null) {
                     // initialLocal 정보를 기반으로 지도의 초기 좌표 설정
                     model.addAttribute("initialLocal", initialLocal); // 전체 LocalEntity 객체를 추가합니다.
-                    System.out.println("------------------------------------------------------");
-                    System.out.println(initialLocal); // LocalEntity 객체의 전체 정보 출력
                 }
             }
 
@@ -145,22 +145,81 @@ public class SchedulerController {
             // 모델에 데이터 추가
             model.addAttribute("adminItemEntity", adminItemEntityList);
             model.addAttribute("schedulerDto", schedulerDto);
-            session.setAttribute("spotId", spotIds);
 
-            // 세션에 localIds를 저장합니다.
-            session.setAttribute("localIds", localIds); // localIds는 쉼표(,)로 구분된 문자열입니다.
-            session.setAttribute("spotIds", spotIds); // localIds는 쉼표(,)로 구분된 문자열입니다.
+            // 세션에 저장합니다.
+            session.setAttribute("schedulerDto", schedulerDto);
+            session.setAttribute("spotIds", spotIds);
+            session.setAttribute("spotMarks", spotMarks);
 
-            System.out.println("--------------------------------------------------------");
             System.out.println(localIds);
             System.out.println(spotIds);
+            System.out.println(schedulerDto.getTrip_duration_end());
 
             return "scheduler/fourth";
-        } catch (Exception e) {
-            // 오류 발생 시 예외 처리
-            System.out.println("Error occurred: " + e.getMessage());
-            return "redirect:/third"; // 오류 발생 시 /third 페이지로 리다이렉트
+
+    }
+
+    @PostMapping("/result")
+    public String result(@ModelAttribute("schedulerDto") SchedulerDto schedulerDto,
+                         @RequestParam("stayId") String stayIds,
+                         Model model, HttpSession session) {
+
+        schedulerDto = (SchedulerDto) session.getAttribute("schedulerDto");
+
+        // 세션에서 localIds, spotIds 가져오기
+        String localIds = (String) session.getAttribute("localIds");
+        String spotIds = (String) session.getAttribute("spotIds");
+
+        // localIds 배열로 변환
+        String[] localIdArray = localIds.split(",");
+
+        // 첫 번째 localId로 초기 지도 좌표 설정
+        if (localIdArray.length > 0) {
+            Long firstLocalId = Long.parseLong(localIdArray[0]);
+            LocalEntity initialLocal = localRepository.findById(firstLocalId).orElse(null);
+
+            if (initialLocal != null) {
+                // 지도 초기 좌표 설정
+                model.addAttribute("initialLocal", initialLocal);
+            }
         }
+
+        // stayIds와 spotIds를 배열로 분할하여 필터링된 adminItemEntity 리스트 준비
+        List<AdminItemEntity> filteredAdminItems = new ArrayList<>();
+
+        // stayIds 필터링
+        String[] stayIdArray = stayIds.split(",");
+        for (String stayId : stayIdArray) {
+            Long stayIdValue = Long.parseLong(stayId);
+            AdminItemEntity itemForStayId = adminItemService.findById(stayIdValue);
+            if (itemForStayId != null && itemForStayId.getId().equals(stayIdValue)) {
+                filteredAdminItems.add(itemForStayId);
+            }
+        }
+
+        // spotIds 필터링
+        String[] spotIdArray = spotIds.split(",");
+        for (String spotId : spotIdArray) {
+            Long spotIdValue = Long.parseLong(spotId);
+            AdminItemEntity itemForSpotId = adminItemService.findById(spotIdValue);
+            if (itemForSpotId != null && itemForSpotId.getId().equals(spotIdValue)) {
+                filteredAdminItems.add(itemForSpotId);
+            }
+        }
+
+        // model에 필터링된 adminItemEntity 리스트 추가
+        model.addAttribute("adminItemEntity", filteredAdminItems);
+
+        // schedulerDto와 선택된 stay, spot 아이템 정보 추가
+        model.addAttribute("schedulerDto", schedulerDto);
+
+        System.out.println("--------^^-------------------------------------");
+        System.out.println(localIds);
+        System.out.println(spotIds);
+        System.out.println(stayIds);
+        System.out.println(schedulerDto.getTrip_duration_end());
+
+        return "scheduler/result";
     }
 
 }

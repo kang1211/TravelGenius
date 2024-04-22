@@ -26,10 +26,12 @@ public class Scheduler {
     private String trip_duration_start;
     @Column
     private String trip_duration_end;
-    @ElementCollection
-    private List<Long> localIds;
-    @ElementCollection
-    private List<Long> adminItemIds;
+    @Column
+    private String localId;
+    @Column
+    private String spotId;
+    @Column
+    private String stayId;
 
     public static Scheduler createScheduler(SchedulerDto schedulerDto) {
         Scheduler scheduler = new Scheduler();
