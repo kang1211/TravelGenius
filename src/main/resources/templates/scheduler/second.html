@@ -73,49 +73,63 @@
 <script type="module"  src="/javascript/scheduler/map.js"></script>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
-  const form = document.querySelector("form");
-  const locationInput = document.getElementById("locationInput");
-  const searchButton = document.getElementById("searchButton");
-  const locationList = document.getElementById("locationList");
+   const form = document.querySelector("form");
+   const locationInput = document.getElementById("locationInput");
+   const locationList = document.getElementById("locationList");
 
-  form.addEventListener("submit", (event) => {
-      // 선택한 관광지 항목 수 확인
-      const selectedItems = selectItem.querySelectorAll(".selected-item");
+   form.addEventListener("submit", (event) => {
+     // 선택한 관광지 항목 수 확인
+     const selectedItems = document.querySelectorAll(".selected-item");
 
-      // 선택된 항목이 없는 경우 폼 제출 중지 및 알림창 표시
-      if (selectedItems.length === 0) {
-          event.preventDefault(); // 폼 제출 중지
+     // 선택된 항목이 없는 경우 폼 제출 중지 및 알림창 표시
+     if (selectedItems.length === 0) {
+       event.preventDefault(); // 폼 제출 중지
 
-          // 알림창 표시
-          alert("관광지를 골라주세요.");
-      }
-  });
+       // 알림창 표시
+       alert("관광지를 골라주세요.");
+     }
+   });
 
    // '일정' 버튼 클릭 시
-    $("#scheduleButton").click(function() {
-        // first.html 페이지로 이동
-        window.location.href = "/schedulers/first";
-    });
+   const scheduleButton = document.getElementById("scheduleButton");
+   scheduleButton.addEventListener("click", () => {
+     // first.html 페이지로 이동
+     window.location.href = "/schedulers/first";
+   });
 
-    searchButton.addEventListener("click", () => {
-        const searchTerm = locationInput.value.trim().toLowerCase(); // 입력된 검색어를 소문자로 변환하여 저장
+   // 위치 입력란인 locationInput에서 Enter 키 입력 처리
+   locationInput.addEventListener("keydown", (e) => {
+     if (e.keyCode === 13) {
+       e.preventDefault(); // 기본 동작(폼 제출) 방지
+       searchLocation(); // 사용자 정의 검색 동작 실행
+     }
+   });
 
-        // 모든 관광지 항목 숨기기
-        const items = locationList.querySelectorAll(".landMark");
-        items.forEach(item => {
-            item.style.display = "none";
-        });
+   // 검색 버튼 클릭 시 검색 이벤트 처리
+   const searchButton = document.getElementById("searchButton");
+   searchButton.addEventListener("click", () => {
+     searchLocation();
+   });
 
-        // 입력된 검색어와 일치하는 항목 보이기
-        items.forEach(item => {
-            const textB = item.querySelector(".B").textContent.trim().toLowerCase(); // class="B"인 요소의 텍스트를 소문자로 변환하여 저장
-            if (textB.includes(searchTerm)) {
-                item.style.display = "block";
-            }
-        });
-    });
+   function searchLocation() {
+     const searchTerm = locationInput.value.trim().toLowerCase(); // 입력된 검색어를 소문자로 변환하여 저장
 
-});
+     // 모든 관광지 항목 숨기기
+     const items = locationList.querySelectorAll(".landMark");
+     items.forEach((item) => {
+       item.style.display = "none";
+     });
+
+     // 입력된 검색어와 일치하는 항목 보이기
+     items.forEach((item) => {
+       const textB = item.querySelector(".B").textContent.trim().toLowerCase(); // class="B"인 요소의 텍스트를 소문자로 변환하여 저장
+       if (textB.includes(searchTerm)) {
+         item.style.display = "block";
+       }
+     });
+   }
+ });
+
 </script>
 </div>
 </html>
