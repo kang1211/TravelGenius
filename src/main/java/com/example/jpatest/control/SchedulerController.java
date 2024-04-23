@@ -162,6 +162,7 @@ public class SchedulerController {
     @PostMapping("/result")
     public String result(@ModelAttribute("schedulerDto") SchedulerDto schedulerDto,
                          @RequestParam("stayId") String stayIds,
+                         @RequestParam("stayMark") String stayMarks,
                          Model model, HttpSession session) {
 
         schedulerDto = (SchedulerDto) session.getAttribute("schedulerDto");
@@ -206,11 +207,9 @@ public class SchedulerController {
                 filteredAdminItems.add(itemForSpotId);
             }
         }
+        session.setAttribute("stayMarks", stayMarks);
 
-        // model에 필터링된 adminItemEntity 리스트 추가
         model.addAttribute("adminItemEntity", filteredAdminItems);
-
-        // schedulerDto와 선택된 stay, spot 아이템 정보 추가
         model.addAttribute("schedulerDto", schedulerDto);
 
         System.out.println("--------^^-------------------------------------");

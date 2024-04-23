@@ -16,7 +16,6 @@
 
 <div layout:fragment="content">
     <form th:action="@{/schedulers/result}" th:object="${schedulerDto}" method="post" class="box">
-    <!--<input type="hidden" id="national">-->
     <input type="hidden" id="localId">
     <input type="hidden" id="spotMarks" th:value="${session.spotMarks}">
         <div id="calendar" style="height:45px; width:100%;display:flex;position:absolute;top:105px;">
