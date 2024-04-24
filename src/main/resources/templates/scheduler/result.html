@@ -12,6 +12,8 @@
 
 <th:block layout:fragment="script">
 <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBKfXUB5b-aS6hLNA93HhTe6UNIqXZkizs&libraries=places,geometry&callback=initMap&v=weekly" defer></script>
+<script type="module"  src="/javascript/scheduler/result.js"></script>
 </th:block>
 
 <div layout:fragment="content">
@@ -109,8 +111,6 @@
             </div>
         </div>
     </form>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBKfXUB5b-aS6hLNA93HhTe6UNIqXZkizs&libraries=places,geometry&callback=initMap&v=weekly" defer></script>
-<script type="module"  src="/javascript/scheduler/result.js"></script>
 <script>
 $(document).ready(function() {
 
@@ -177,6 +177,7 @@ function parseDate(dateString) {
     const day = dayStr.replace('일', '').padStart(2, '0');
     return `${month}-${day}`;
 }
+
 </script>
 </div>
 </html>
