@@ -11,8 +11,6 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("initialLocal:", initialLocalValue);
     console.log("spotMarks:", spotMarks);
 
-    initMap(initialLocalValue);
-
     function initMap(initialLocation) {
         map = new google.maps.Map(document.getElementById("map"), {
             center: { lat: 37.5665, lng: 126.978 }, // 초기 지도 중심 위치 (서울 시청)
@@ -20,6 +18,20 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         geocoder = new google.maps.Geocoder();
+
+        if (initialLocation) {
+                const locationText = initialLocation;
+
+                geocoder.geocode({ address: locationText }, (results, status) => {
+                    if (status === "OK" && results && results.length > 0) {
+                        const location = results[0].geometry.location;
+                        // 검색된 위치를 지도의 중심으로 설정
+                        map.setCenter(location);
+                    } else {
+                        console.error("위치를 찾을 수 없습니다.");
+                    }
+                });
+        }
 
         // spotMarks에 있는 각 위치를 처리하여 파랑색 핀을 생성하고 spotMarkers 배열에 추가
         if (spotMarks) {
@@ -53,11 +65,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const checkbox = stay.querySelector('.location-checkbox');
             const stayName = stay.querySelector('.stay-name').textContent;
             const stayId = stay.querySelector('.D').textContent.trim();
-            const Address = stay.querySelector('.stay-address').textContent.trim();
+            const stayAddress = stay.querySelector('.stay-address').textContent.trim();
 
             checkbox.addEventListener('change', (event) => {
                 const locationText = stayName;
-                const locationAddress = Address;
 
                 if (event.target.checked) {
                     if (selectedSpots.has(locationText)) {
@@ -66,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         return;
                     }
 
-                    geocoder.geocode({ address: locationAddress }, (results, status) => {
+                    geocoder.geocode({ address: stayAddress }, (results, status) => {
                         if (status === "OK" && results && results.length > 0) {
                             const location = results[0].geometry.location;
 
@@ -76,7 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                 title: locationText,
                             });
                             markers.push(marker);
-                            addCityToSelection(locationText, stayId, marker); // 선택된 위치에 빨간색 핀 추가
+                            addCityToSelection(locationText, stayId, stayAddress, marker); // 선택된 위치에 빨간색 핀 추가
                             map.panTo(location);
                         } else {
                             console.error("위치를 찾을 수 없습니다.");
@@ -85,7 +96,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 } else {
                     const marker = markers.find((m) => m.getTitle() === locationText);
                     const locationBlock = document.querySelector(`.selected-item[data-location="${locationText}"]`);
-
                     if (marker && locationBlock) {
                         removeMarkerAndBlock(locationText, marker, locationBlock);
                     }
@@ -103,7 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // 선택된 위치에 빨간색 핀을 추가하는 함수
-    function addCityToSelection(locationText, locationId, marker) {
+    function addCityToSelection(locationText, locationId, locationAddress, marker) {
         if (selectedSpots.has(locationText)) {
                 return;
             }
@@ -123,7 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const hiddenInput2 = document.createElement("input");
             hiddenInput2.type = "hidden";
             hiddenInput2.name = "stayMark";
-            hiddenInput2.value = locationText;
+            hiddenInput2.value = locationAddress;
             locationBlock.appendChild(hiddenInput2);
 
             selectItem.appendChild(locationBlock);
@@ -146,4 +156,6 @@ document.addEventListener("DOMContentLoaded", () => {
             checkbox.checked = false;
         }
     }
+
+    initMap(initialLocalValue);
 });

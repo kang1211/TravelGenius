@@ -150,6 +150,30 @@ public class MainController {
         }
     }
 
+    @GetMapping("/members/changePw")
+    public String getChangePw(Model model){
+
+        model.addAttribute("memberFormDto", new MemberFormDto());
+        return "member/changePw";
+    }
+
+    @PostMapping("members/subChangePw")
+    public String postChangePw(@RequestParam("memberPassword") String memberPassword, MemberFormDto memberFormDto, Model model){
+        String email = memberFormDto.getEmail(); String tel = memberFormDto.getTel(); String password = memberFormDto.getPassword();
+        if (email == null || tel == null || password == null || memberPassword == null) {
+            return "redirect:/member/changePw"; // 회원가입 폼을 다시 표시
+        }
+        Member member = memberService.findByEmail(email);
+        if (member.getTel().equals(tel) && passwordEncoder.matches(memberPassword, member.getPassword()) ){
+            memberService.changePw(email, password);
+            return "member/loginForm";
+        }
+        else{
+            System.out.println("changePw Error");
+            return "member/loginForm";
+        }
+    }
+
     @GetMapping("/members/findPw")
     public String getFindPw(Model model){
 
@@ -158,7 +182,7 @@ public class MainController {
 
     @PostMapping("/members/sendTemporaryPassword")
     @ResponseBody
-    public String sendTemporaryPassword(String email, String tel) {
+    public String sendTemporaryPassword(@NotBlank String email, @NotBlank String tel) {
         // 네이버 메일 계정 설정
         String naverEmail = "songjaey8237@naver.com";
 //        String naverPassword = "Thdrk2838!";
@@ -204,8 +228,6 @@ public class MainController {
         }
         return sb.toString();
     }
-
-
 
 
     // 회원정보 수정 mymenu

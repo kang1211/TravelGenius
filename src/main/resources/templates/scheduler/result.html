@@ -56,7 +56,6 @@
 
             <div id="map" style="width:650px;height:650px;margin:100px;border-radius:10px;"></div>
             <input type="hidden" id="initialLocal" th:value="${initialLocal.local}">
-            <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBKfXUB5b-aS6hLNA93HhTe6UNIqXZkizs&callback=initMap&v=weekly" defer></script>
         </div>
 
         <!-- 모달 -->
@@ -99,10 +98,10 @@
                     <button type="button" id="scheduleButton" style="color:black;background:none;border:none;font-size:30px;font-family:LINE Seed Sans KR;font-weight:bold;">일정</button>
                 </div>
                 <div style="cursor:pointer;width:150px;height:80px;background-color:white;border-radius:10px;display:flex;justify-content:center;align-items:center;margin-bottom:30px;">
-                    <button type="button" id="localButton" style="color:black;background:none;border:none;font-size:30px;font-family:LINE Seed Sans KR;font-weight:bold;">관광지</button>
+                    <a href="/schedulers/second" id="localButton2" style="color:black;background:none;border:none;font-size:30px;font-family:LINE Seed Sans KR;font-weight:bold;text-decoration: none;">관광지</a>
                 </div>
                 <div style="cursor:pointer;width:150px;height:80px;background-color:white;border-radius:10px;display:flex;justify-content:center;align-items:center;margin-bottom:30px;">
-                    <button type="button" id="spotButton" style="color:black;background:none;border:none;font-size:30px;font-family:LINE Seed Sans KR;font-weight:bold;">명소/식당</button>
+                    <a href="/schedulers/third" id="localButton3" style="color:black;background:none;border:none;font-size:30px;font-family:LINE Seed Sans KR;font-weight:bold;text-decoration: none;">명소/식당</a>
                 </div>
             </div>
             <div style="cursor:pointer;width:150px;height:80px;background-color:white;border-radius:10px;display:flex;justify-content:center;align-items:center;margin-bottom:30px;">
@@ -110,6 +109,7 @@
             </div>
         </div>
     </form>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBKfXUB5b-aS6hLNA93HhTe6UNIqXZkizs&libraries=places,geometry&callback=initMap&v=weekly" defer></script>
 <script type="module"  src="/javascript/scheduler/result.js"></script>
 <script>
 $(document).ready(function() {
@@ -117,8 +117,6 @@ $(document).ready(function() {
     // DurationStart와 DurationEnd의 값을 JavaScript 변수로 가져오기
     const durationStart = $('#DurationStart').val();
     const durationEnd = $('#DurationEnd').val();
-
-    console.log(durationStart);
 
     // 현재 년도 가져오기
     const currentYear = new Date().getFullYear();
@@ -179,7 +177,6 @@ function parseDate(dateString) {
     const day = dayStr.replace('일', '').padStart(2, '0');
     return `${month}-${day}`;
 }
-
 </script>
 </div>
 </html>

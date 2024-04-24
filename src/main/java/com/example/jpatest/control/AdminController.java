@@ -146,6 +146,8 @@ public class AdminController {
             return "adminhub/localDetail"; // 또는 적절한 오류 뷰 반환
         }
     }
+
+
     @PostMapping("/localDetail")
     public String showLocalDetail(@RequestParam("country") String country,
                                   @RequestParam("local") String local,
@@ -293,7 +295,6 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("상품 삭제에 실패했습니다.");
         }
     }
-
 
     @GetMapping("/images/{imageName}")
     @ResponseBody

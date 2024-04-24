@@ -19,5 +19,4 @@ public class SchedulerService {
         Scheduler scheduler = Scheduler.createScheduler(schedulerDto);
         schedulerRepository.save(scheduler);
     }
-
 }

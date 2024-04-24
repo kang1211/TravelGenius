@@ -33,12 +33,20 @@
         <p style="height:80px; padding:0;margin:0; width:100%;font-size:20px;font-family:LINE Seed Sans KR;font-weight:bold;display:flex;justify-content:center; align-items:center;color:white;">선택한 관광지</p>
 
         <div id="selectItem" style="width:600px; height:150px;display:flex;justify-content:center;align-items:center;">
+          <div class="initialLocals" style="display: none;">
+            <div th:each="initialLocal : ${initialLocals}">
+              <div class="initialCountry" th:text="${initialLocal.local}"></div>
+              <div class="initialLocal" th:text="${initialLocal.country}"></div>
+              <div class="initialId" th:text="${initialLocal.id}"></div>
+            </div>
+          </div>
+
         </div>
 
         <div style="height:100px;width:600px;display:flex;justify-content:center;align-items:center;">
           <div style="width:500px;height:50px;display:flex;align-items:center;background-color:#004392;border:3px solid white;border-radius:10px;">
             <input style="width:100%;height:100%;border:none;" type="text" id="locationInput" placeholder="지역명을 입력하세요">
-            <button style="width:70px;height:100%;color:white;font-size:30px;font-weight:bold;background:black;border-left:1px solid white;border-top-right-radius: 10px;border-bottom-right-radius: 10px;" type="button" id="searchButton()"><i class="bi bi-search"></i></button>
+            <button style="width:70px;height:100%;color:white;font-size:30px;font-weight:bold;background:black;border-left:1px solid white;border-top-right-radius: 10px;border-bottom-right-radius: 10px;" type="button" onclick="searchLocation()"><i class="bi bi-search"></i></button>
           </div>
         </div>
 
@@ -61,75 +69,75 @@
 
     <div style="width:11%;height:100%;background:#000A67;display:flex;flex-direction:column; justify-content:space-between;align-items:center;">
       <div style="margin-top:50px;">
-      <div style="cursor:pointer;width:150px;height:80px;background-color:white;border-radius:10px;display:flex;justify-content:center;align-items:center;margin-bottom:30px;">
-        <button type="button" id="scheduleButton" style="color:black;background:none;border:none;font-size:30px;font-family:LINE Seed Sans KR;font-weight:bold;">일정</button>
+        <div style="cursor:pointer;width:150px;height:80px;background-color:white;border-radius:10px;display:flex;justify-content:center;align-items:center;margin-bottom:30px;">
+          <button type="button" id="scheduleButton" style="color:black;background:none;border:none;font-size:30px;font-family:LINE Seed Sans KR;font-weight:bold;text-decoration: none;">일정</button>
+        </div>
       </div>
-      </div>
       <div style="cursor:pointer;width:150px;height:80px;background-color:white;border-radius:10px;display:flex;justify-content:center;align-items:center;margin-bottom:30px;">
-          <button type="submit" style="color:black;background:none;border:none;font-size:30px;font-family:LINE Seed Sans KR;font-weight:bold;">Next</button>
+        <button type="submit" style="color:black;background:none;border:none;font-size:30px;font-family:LINE Seed Sans KR;font-weight:bold;">Next</button>
       </div>
     </div>
   </form>
-<script type="module"  src="/javascript/scheduler/map.js"></script>
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-   const form = document.querySelector("form");
-   const locationInput = document.getElementById("locationInput");
-   const locationList = document.getElementById("locationList");
+  <script type="module"  src="/javascript/scheduler/map.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+     const form = document.querySelector("form");
+     const locationInput = document.getElementById("locationInput");
+     const locationList = document.getElementById("locationList");
 
-   form.addEventListener("submit", (event) => {
-     // 선택한 관광지 항목 수 확인
-     const selectedItems = document.querySelectorAll(".selected-item");
+     form.addEventListener("submit", (event) => {
+       // 선택한 관광지 항목 수 확인
+       const selectedItems = document.querySelectorAll(".selected-item");
 
-     // 선택된 항목이 없는 경우 폼 제출 중지 및 알림창 표시
-     if (selectedItems.length === 0) {
-       event.preventDefault(); // 폼 제출 중지
+       // 선택된 항목이 없는 경우 폼 제출 중지 및 알림창 표시
+       if (selectedItems.length === 0) {
+         event.preventDefault(); // 폼 제출 중지
 
-       // 알림창 표시
-       alert("관광지를 골라주세요.");
-     }
-   });
-
-   // '일정' 버튼 클릭 시
-   const scheduleButton = document.getElementById("scheduleButton");
-   scheduleButton.addEventListener("click", () => {
-     // first.html 페이지로 이동
-     window.location.href = "/schedulers/first";
-   });
-
-   // 위치 입력란인 locationInput에서 Enter 키 입력 처리
-   locationInput.addEventListener("keydown", (e) => {
-     if (e.keyCode === 13) {
-       e.preventDefault(); // 기본 동작(폼 제출) 방지
-       searchLocation(); // 사용자 정의 검색 동작 실행
-     }
-   });
-
-   // 검색 버튼 클릭 시 검색 이벤트 처리
-   const searchButton = document.getElementById("searchButton");
-   searchButton.addEventListener("click", () => {
-     searchLocation();
-   });
-
-   function searchLocation() {
-     const searchTerm = locationInput.value.trim().toLowerCase(); // 입력된 검색어를 소문자로 변환하여 저장
-
-     // 모든 관광지 항목 숨기기
-     const items = locationList.querySelectorAll(".landMark");
-     items.forEach((item) => {
-       item.style.display = "none";
-     });
-
-     // 입력된 검색어와 일치하는 항목 보이기
-     items.forEach((item) => {
-       const textB = item.querySelector(".B").textContent.trim().toLowerCase(); // class="B"인 요소의 텍스트를 소문자로 변환하여 저장
-       if (textB.includes(searchTerm)) {
-         item.style.display = "block";
+         // 알림창 표시
+         alert("관광지를 골라주세요.");
        }
      });
-   }
- });
 
-</script>
+     // '일정' 버튼 클릭 시
+     const scheduleButton = document.getElementById("scheduleButton");
+     scheduleButton.addEventListener("click", () => {
+       // first.html 페이지로 이동
+       window.location.href = "/schedulers/first";
+     });
+
+     // 위치 입력란인 locationInput에서 Enter 키 입력 처리
+     locationInput.addEventListener("keydown", (e) => {
+       if (e.keyCode === 13) {
+         e.preventDefault(); // 기본 동작(폼 제출) 방지
+         searchLocation(); // 사용자 정의 검색 동작 실행
+       }
+     });
+
+     // 검색 버튼 클릭 시 검색 이벤트 처리
+     const searchButton = document.getElementById("searchButton");
+     searchButton.addEventListener("click", () => {
+       searchLocation();
+     });
+
+     function searchLocation() {
+       const searchTerm = locationInput.value.trim().toLowerCase(); // 입력된 검색어를 소문자로 변환하여 저장
+
+       // 모든 관광지 항목 숨기기
+       const items = locationList.querySelectorAll(".landMark");
+       items.forEach((item) => {
+         item.style.display = "none";
+       });
+
+       // 입력된 검색어와 일치하는 항목 보이기
+       items.forEach((item) => {
+         const textB = item.querySelector(".B").textContent.trim().toLowerCase(); // class="B"인 요소의 텍스트를 소문자로 변환하여 저장
+         if (textB.includes(searchTerm)) {
+           item.style.display = "block";
+         }
+       });
+     }
+   });
+
+  </script>
 </div>
 </html>
