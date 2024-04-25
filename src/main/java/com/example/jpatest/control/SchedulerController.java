@@ -6,7 +6,9 @@ import com.example.jpatest.entity.LocalEntity;
 import com.example.jpatest.entity.Scheduler;
 import com.example.jpatest.repository.LocalRepository;
 import com.example.jpatest.service.AdminItemService;
+import com.example.jpatest.service.GoogleMapsService;
 import com.example.jpatest.service.SchedulerService;
+import com.example.jpatest.util.GeneticAlgorithmTSP;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,10 +18,15 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 
@@ -30,8 +37,9 @@ public class SchedulerController {
 
     private final SchedulerService schedulerService;
     private final LocalRepository localRepository;
-
+    private final GoogleMapsService googleMapsService;
     private final AdminItemService adminItemService;
+    /*private final GeneticAlgorithmTSP geneticAlgorithmTSP;*/
     private static final Logger logger = LoggerFactory.getLogger(SchedulerController.class);
 
     @GetMapping("/first")
@@ -175,9 +183,41 @@ public class SchedulerController {
     @PostMapping("/result")
     public String result(@ModelAttribute("schedulerDto") SchedulerDto schedulerDto,
                          @RequestParam("stayId") String stayIds,
+                         @RequestParam("stayMark") String stayMarks,
                          Model model, HttpSession session) {
-
         schedulerDto = (SchedulerDto) session.getAttribute("schedulerDto");
+
+        /*----------------------------------------------------------------------------------*/
+        // 폼에서 시간과 분을 추출합니다.
+        int Shour = Integer.parseInt(schedulerDto.getDepartureHour());
+        int Sminute = Integer.parseInt(schedulerDto.getDepartureMinute());
+    /*    int Ehour = Integer.parseInt(schedulerDto.getArrivalHour());
+        int Eminute = Integer.parseInt(schedulerDto.getArrivalMinute());*/
+
+        String durationStart = schedulerDto.getTrip_duration_start();
+        /*String durationEnd = schedulerDto.getTrip_duration_end();*/
+
+        // 정규 표현식을 사용하여 월과 일을 추출
+        Pattern pattern = Pattern.compile("(\\d+)월 (\\d+)일");
+        Matcher startMatcher = pattern.matcher(durationStart);
+        /*Matcher endMatcher = pattern.matcher(durationEnd);*/
+
+        if (startMatcher.find()) {
+            // 추출된 월과 일을 정수형으로 변환
+            int Smonth = Integer.parseInt(startMatcher.group(1));
+            int Sday = Integer.parseInt(startMatcher.group(2));
+      /*      int Emonth = Integer.parseInt(endMatcher.group(1));
+            int Eday = Integer.parseInt(endMatcher.group(2));*/
+            /*int Year = LocalDateTime.now().getYear();*/
+
+            // 입력된 시간과 분으로 LocalDateTime 객체를 생성합니다.
+            LocalDateTime startDateTime = LocalDateTime.of(2024, Smonth, Sday, Shour, Sminute);
+            GeneticAlgorithmTSP.setOriginStartTime(startDateTime);
+
+            /*LocalDateTime endDateTime = LocalDateTime.of(2024, Emonth, Eday, Ehour, Eminute);
+            GeneticAlgorithmTSP.setOriginEndTime(endDateTime);*/
+        }
+        /*----------------------------------------------------------------------------------*/
 
         // 세션에서 localIds, spotIds 가져오기
         String localIds = (String) session.getAttribute("localIds");
@@ -220,17 +260,76 @@ public class SchedulerController {
             }
         }
 
-        // model에 필터링된 adminItemEntity 리스트 추가
+        String origin="인천광역시 중구 공항로424번길 47"; String destination="인천광역시 중구 공항로424번길 47";
+
+        List<SchedulerDto> routes = googleMapsService.getOptimalRoute(origin, destination, filteredAdminItems);
+        System.out.println(routes);
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        List<SchedulerDto> day1Routes = new ArrayList<>(); List<SchedulerDto> day2Routes = new ArrayList<>(); List<SchedulerDto> day3Routes = new ArrayList<>();
+        List<SchedulerDto> day4Routes = new ArrayList<>(); List<SchedulerDto> day5Routes = new ArrayList<>(); List<SchedulerDto> day6Routes = new ArrayList<>();
+        List<SchedulerDto> day7Routes = new ArrayList<>(); List<SchedulerDto> day8Routes = new ArrayList<>(); List<SchedulerDto> day9Routes = new ArrayList<>();
+        List<SchedulerDto> day10Routes = new ArrayList<>();
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        LocalDate currentDate = routes.get(0).getArrivalTime().toLocalDate();
+        int year = currentDate.getYear();
+        int month = currentDate.getMonthValue();
+        int day = currentDate.getDayOfMonth(); // day 4.25일
+
+        for(SchedulerDto route : routes){
+            LocalDate dateTemp = route.getArrivalTime().toLocalDate();
+            int yearTemp = dateTemp.getYear();
+            int dayTemp = dateTemp.getDayOfMonth();
+            int diff;
+            if (dayTemp >= day) { //dayTemp 5월 1일
+                diff = dayTemp - day;
+            } else {
+                YearMonth yearMonthObject = YearMonth.of(year, month);
+                int daysInMonth = yearMonthObject.lengthOfMonth(); // 해당 월의 날짜 수
+                diff = daysInMonth + dayTemp - day;
+            }
+
+            switch(diff) {
+                case 0:
+                    day1Routes.add(route);
+                    break;
+                case 1:
+                    day2Routes.add(route);
+                    break;
+                case 2:
+                    day3Routes.add(route);
+                    break;
+                case 3:
+                    day4Routes.add(route);
+                    break;
+                case 4:
+                    day5Routes.add(route);
+                    break;
+                case 5:
+                    day6Routes.add(route);
+                    break;
+                case 6:
+                    day7Routes.add(route);
+                    break;
+                case 7:
+                    day8Routes.add(route);
+                    break;
+                case 8:
+                    day9Routes.add(route);
+                    break;
+                case 9:
+                    day10Routes.add(route);
+                    break;
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        session.setAttribute("stayMarks", stayMarks);
         model.addAttribute("adminItemEntity", filteredAdminItems);
-
-        // schedulerDto와 선택된 stay, spot 아이템 정보 추가
         model.addAttribute("schedulerDto", schedulerDto);
+        model.addAttribute("routes", routes);
 
-        System.out.println("--------^^-------------------------------------");
-        System.out.println(localIds);
-        System.out.println(spotIds);
-        System.out.println(stayIds);
-        System.out.println(schedulerDto.getTrip_duration_end());
 
         return "scheduler/result";
     }
