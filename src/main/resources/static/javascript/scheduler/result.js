@@ -43,6 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 contents.forEach((content) => {
                     const resultAddress = content.querySelector('.result-address').textContent;
+                    const resultName = content.querySelector('.result-name').textContent;
 
                     geocoder.geocode({ address: resultAddress }, (results, status) => {
                         if (status === "OK" && results && results.length > 0) {
@@ -55,6 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             closestContents.push({
                                 location: location,
                                 address: resultAddress,
+                                name: resultName,
                                 distance: distanceToAirport
                             });
 
@@ -68,12 +70,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
                                 closestContents.forEach((content, index) => {
                                     const contentLocation = content.location;
+                                    const contentName = content.name; // 컨텐츠의 이름 가져오기
 
                                     // 컨텐츠 핀 생성
                                     const contentMarker = new google.maps.Marker({
                                         position: contentLocation,
                                         map: map,
                                         label: (index + 1).toString() // 순서대로 번호 부여
+                                    });
+
+                                    // 정보 창 (Infowindow) 생성
+                                    const infowindow = new google.maps.InfoWindow({
+                                        content: `<div><strong>${contentName}</strong></div>` // 이름을 정보 창에 표시
+                                    });
+
+                                    // 컨텐츠 핀 클릭 시 정보 창 열기
+                                    contentMarker.addListener('click', () => {
+                                        infowindow.open(map, contentMarker);
                                     });
 
                                     // 경로 연결선 그리기
@@ -111,7 +124,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
-
 
     function findNearestAirport(address, callback) {
         geocoder.geocode({ address: address }, (results, status) => {

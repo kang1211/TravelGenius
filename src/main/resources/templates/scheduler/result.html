@@ -105,9 +105,12 @@
                 <div style="cursor:pointer;width:150px;height:80px;background-color:white;border-radius:10px;display:flex;justify-content:center;align-items:center;margin-bottom:30px;">
                     <a href="/schedulers/third" id="localButton3" style="color:black;background:none;border:none;font-size:30px;font-family:LINE Seed Sans KR;font-weight:bold;text-decoration: none;">명소/식당</a>
                 </div>
+                <div style="cursor:pointer;width:150px;height:80px;background-color:white;border-radius:10px;display:flex;justify-content:center;align-items:center;margin-bottom:30px;">
+                    <a href="/schedulers/fourth" id="localButton4" style="color:black;background:none;border:none;font-size:30px;font-family:LINE Seed Sans KR;font-weight:bold;text-decoration: none;">숙박</a>
+                </div>
             </div>
             <div style="cursor:pointer;width:150px;height:80px;background-color:white;border-radius:10px;display:flex;justify-content:center;align-items:center;margin-bottom:30px;">
-                <button type="button" onclick="saveSelectedLocations()" style="color:black;background:none;border:none;font-size:30px;font-family:LINE Seed Sans KR;font-weight:bold;">Next</button>
+                <button type="button" onclick="saveSelectedLocations()" style="color:black;background:none;border:none;font-size:30px;font-family:LINE Seed Sans KR;font-weight:bold;">저장하기</button>
             </div>
         </div>
     </form>
@@ -163,20 +166,27 @@ $(document).ready(function() {
         $('#modal').show();
     });
 
+    // 모달 창 닫기 버튼 클릭 이벤트 처리
+    $('.close-btn').click(function() {
+        $('#modal').hide();
+    });
+
+
     // '일정' 버튼 클릭 시
     $("#scheduleButton").click(function() {
         // first.html 페이지로 이동
         window.location.href = "/schedulers/first";
     });
+
 });
 
-// '4월 1일' 형식을 '04-01' 형식으로 변환하는 함수
-function parseDate(dateString) {
-    const [monthStr, dayStr] = dateString.split(' ');
-    const month = monthStr.replace('월', '').padStart(2, '0');
-    const day = dayStr.replace('일', '').padStart(2, '0');
-    return `${month}-${day}`;
-}
+    // '4월 1일' 형식을 '04-01' 형식으로 변환하는 함수
+    function parseDate(dateString) {
+        const [monthStr, dayStr] = dateString.split(' ');
+        const month = monthStr.replace('월', '').padStart(2, '0');
+        const day = dayStr.replace('일', '').padStart(2, '0');
+        return `${month}-${day}`;
+    }
 
 </script>
 </div>
