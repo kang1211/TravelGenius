@@ -11,7 +11,9 @@
 </th:block>
 
 <th:block layout:fragment="script">
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBKfXUB5b-aS6hLNA93HhTe6UNIqXZkizs&libraries=places,geometry&callback=initMap&v=weekly" defer></script>
+<script type="module"  src="/javascript/scheduler/result.js"></script>
 </th:block>
 
 <div layout:fragment="content">
@@ -35,12 +37,6 @@
                 </div>
                 <div id="lcBox">
                     <div id="locationList">
-                        <div th:each="route : ${routes}" th:if="${routes != null}" class="resultContents" th:style="'display:none;'">
-                            <input class="resultRoute" th:value="${route.lat}">
-                            <input class="resultRoute" th:value="${route.lng}">
-                            <input class="resultRoute" th:value="${route.arrivalTime}">
-                        </div>
-
                         <div th:each="result : ${adminItemEntity}" th:if="${result != null}" class="contents" th:attr="data-content-type=${result.contentType}" style="height:115px;width:500px; display:flex; justify-content:left; align-items:center; border-radius:10px;background-color:orange; margin-bottom:10px;">
                             <div class="result-image" th:style="'margin:10px; border-radius:8px; width:120px; height:100px; background-image: url(' + ${result.imgUrl} + '); background-position:center; background-size:cover;'"></div>
                             <div class="result-details" style="display:flex; justify-content:start;flex-wrap:wrap; padding-right:20px;width:450px;">
@@ -62,7 +58,6 @@
 
             <div id="map" style="width:650px;height:650px;margin:100px;border-radius:10px;"></div>
             <input type="hidden" id="initialLocal" th:value="${initialLocal.local}">
-            <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBKfXUB5b-aS6hLNA93HhTe6UNIqXZkizs&callback=initMap&v=weekly" defer></script>
         </div>
 
         <!-- 모달 -->
@@ -105,10 +100,10 @@
                     <button type="button" id="scheduleButton" style="color:black;background:none;border:none;font-size:30px;font-family:LINE Seed Sans KR;font-weight:bold;">일정</button>
                 </div>
                 <div style="cursor:pointer;width:150px;height:80px;background-color:white;border-radius:10px;display:flex;justify-content:center;align-items:center;margin-bottom:30px;">
-                    <button type="button" id="localButton" style="color:black;background:none;border:none;font-size:30px;font-family:LINE Seed Sans KR;font-weight:bold;">관광지</button>
+                    <a href="/schedulers/second" id="localButton2" style="color:black;background:none;border:none;font-size:30px;font-family:LINE Seed Sans KR;font-weight:bold;text-decoration: none;">관광지</a>
                 </div>
                 <div style="cursor:pointer;width:150px;height:80px;background-color:white;border-radius:10px;display:flex;justify-content:center;align-items:center;margin-bottom:30px;">
-                    <button type="button" id="spotButton" style="color:black;background:none;border:none;font-size:30px;font-family:LINE Seed Sans KR;font-weight:bold;">명소/식당</button>
+                    <a href="/schedulers/third" id="localButton3" style="color:black;background:none;border:none;font-size:30px;font-family:LINE Seed Sans KR;font-weight:bold;text-decoration: none;">명소/식당</a>
                 </div>
             </div>
             <div style="cursor:pointer;width:150px;height:80px;background-color:white;border-radius:10px;display:flex;justify-content:center;align-items:center;margin-bottom:30px;">
@@ -116,76 +111,73 @@
             </div>
         </div>
     </form>
-    <script type="module"  src="/javascript/scheduler/result.js"></script>
-    <script>
-        $(document).ready(function() {
+<script>
+$(document).ready(function() {
 
-            // DurationStart와 DurationEnd의 값을 JavaScript 변수로 가져오기
-            const durationStart = $('#DurationStart').val();
-            const durationEnd = $('#DurationEnd').val();
+    // DurationStart와 DurationEnd의 값을 JavaScript 변수로 가져오기
+    const durationStart = $('#DurationStart').val();
+    const durationEnd = $('#DurationEnd').val();
 
-            console.log(durationStart);
+    // 현재 년도 가져오기
+    const currentYear = new Date().getFullYear();
 
-            // 현재 년도 가져오기
-            const currentYear = new Date().getFullYear();
+    // Date 객체 생성
+    const startDate = new Date(`${currentYear}-${parseDate(durationStart)}`);
+    const endDate = new Date(`${currentYear}-${parseDate(durationEnd)}`);
 
-            // Date 객체 생성
-            const startDate = new Date(`${currentYear}-${parseDate(durationStart)}`);
-            const endDate = new Date(`${currentYear}-${parseDate(durationEnd)}`);
+    // DurationStart와 DurationEnd 사이의 일수 계산
+    const timeDifference = endDate.getTime() - startDate.getTime();
+    const dayDifference = Math.ceil(timeDifference / (1000 * 3600 * 24)); // 밀리초로 계산된 차이를 일수로 변환
 
-            // DurationStart와 DurationEnd 사이의 일수 계산
-            const timeDifference = endDate.getTime() - startDate.getTime();
-            const dayDifference = Math.ceil(timeDifference / (1000 * 3600 * 24)); // 밀리초로 계산된 차이를 일수로 변환
+    // Day1, Day2, ... 등의 div를 동적으로 생성
+    const contentDiv = document.getElementById('tourDays');
+    contentDiv.innerHTML = ''; // 기존의 내용 초기화
 
-            // Day1, Day2, ... 등의 div를 동적으로 생성
-            const contentDiv = document.getElementById('tourDays');
-            contentDiv.innerHTML = ''; // 기존의 내용 초기화
+    for (let i = 1; i <= dayDifference + 1; i++) {
+        const dayDiv = document.createElement('div');
+        dayDiv.textContent = `Day${i}`;
+        contentDiv.appendChild(dayDiv);
+    }
 
-            for (let i = 1; i <= dayDifference + 1; i++) {
-                const dayDiv = document.createElement('div');
-                dayDiv.textContent = `Day${i}`;
-                contentDiv.appendChild(dayDiv);
-            }
+    $('.result-image').click(function() {
+        // 모달에 표시될 정보 추출
+        const imgUrl = $(this).css('background-image');
+        const touristSpotName = $(this).siblings('.result-details').find('.result-name').text();
+        const contact = $(this).siblings('.result-details').find('.result-contact').text();
+        const address = $(this).siblings('.result-details').find('.result-address').text();
+        const businessHours = $(this).siblings('.result-details').find('.day-time-entry').map(function() {
+            return $(this).find('label').text() + ': ' + $(this).find('div').text();
+        }).get().join('<br>'); // 각 businessHour를 줄바꿈으로 연결하여 표시
 
-            $('.result-image').click(function() {
-                // 모달에 표시될 정보 추출
-                const imgUrl = $(this).css('background-image');
-                const touristSpotName = $(this).siblings('.result-details').find('.result-name').text();
-                const contact = $(this).siblings('.result-details').find('.result-contact').text();
-                const address = $(this).siblings('.result-details').find('.result-address').text();
-                const businessHours = $(this).siblings('.result-details').find('.day-time-entry').map(function() {
-                    return $(this).find('label').text() + ': ' + $(this).find('div').text();
-                }).get().join('<br>'); // 각 businessHour를 줄바꿈으로 연결하여 표시
+        // 이미지 URL 추출
+        const imageUrl = imgUrl.slice(5, -2); // "url('...')" 형식에서 URL만 추출
 
-                // 이미지 URL 추출
-                const imageUrl = imgUrl.slice(5, -2); // "url('...')" 형식에서 URL만 추출
+        // 모달에 정보 설정
+        $('#imageInput').attr('src', imageUrl); // src 속성 설정
+        $('#touristSpotName').text(touristSpotName);
+        $('#modalContact').text(contact);
+        $('#modalAddress').text(address);
+        $('#modalBusinessHours').html(businessHours);
 
-                // 모달에 정보 설정
-                $('#imageInput').attr('src', imageUrl); // src 속성 설정
-                $('#touristSpotName').text(touristSpotName);
-                $('#modalContact').text(contact);
-                $('#modalAddress').text(address);
-                $('#modalBusinessHours').html(businessHours);
+        // 모달 창 보이기
+        $('#modal').show();
+    });
 
-                // 모달 창 보이기
-                $('#modal').show();
-            });
+    // '일정' 버튼 클릭 시
+    $("#scheduleButton").click(function() {
+        // first.html 페이지로 이동
+        window.location.href = "/schedulers/first";
+    });
+});
 
-            // '일정' 버튼 클릭 시
-            $("#scheduleButton").click(function() {
-                // first.html 페이지로 이동
-                window.location.href = "/schedulers/first";
-            });
-        });
+// '4월 1일' 형식을 '04-01' 형식으로 변환하는 함수
+function parseDate(dateString) {
+    const [monthStr, dayStr] = dateString.split(' ');
+    const month = monthStr.replace('월', '').padStart(2, '0');
+    const day = dayStr.replace('일', '').padStart(2, '0');
+    return `${month}-${day}`;
+}
 
-        // '4월 1일' 형식을 '04-01' 형식으로 변환하는 함수
-        function parseDate(dateString) {
-            const [monthStr, dayStr] = dateString.split(' ');
-            const month = monthStr.replace('월', '').padStart(2, '0');
-            const day = dayStr.replace('일', '').padStart(2, '0');
-            return `${month}-${day}`;
-        }
-
-    </script>
+</script>
 </div>
 </html>
