@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const initialLocalValue = document.getElementById("initialLocal").value;
     const spotMarks = document.getElementById("spotMarks").value;
 
+
     console.log("initialLocal:", initialLocalValue);
     console.log("spotMarks:", spotMarks);
 
@@ -51,19 +52,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
                         spotMarkers.push(marker); // spotMarkers 배열에 파랑색 핀 추가
 
-                        // 주변 공항 검색
-                        findNearestAirport(locationText, (nearestAirport) => {
-                            if (nearestAirport) {
-                                const airportAddress = nearestAirport.formatted_address;
-                                const airportInput = document.getElementById("airport");
-                                airportInput.value = airportAddress; // 공항 주소를 설정
-                                console.log("가장 가까운 공항:", airportAddress);
-                            } else {
-                                console.error("근처에 공항이 없습니다.");
-                                const airportInput = document.getElementById("airport");
-                                airportInput.value = ""; // 공항이 없는 경우 빈 값으로 설정
-                            }
-                        });
                     } else {
                         console.error(`위치를 찾을 수 없습니다: ${location}`);
                     }
@@ -111,6 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const initialItem2 = selectItem.querySelectorAll('.initialItem2');
         //////////////////////////////////////////////////////////////////////////////
+
         if ( $(initialItem2).length > 0) {
            initialItem2.forEach((item) => {
                const stayAddress = item.querySelector('.initialLocal').textContent;
@@ -192,6 +181,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
             }
         });
+        // 참조된 위치의 주소를 이용하여 가장 가까운 공항 주소를 콘솔에 출력
 
     }
 
@@ -222,25 +212,22 @@ document.addEventListener("DOMContentLoaded", () => {
         const hiddenInput3 = document.createElement("input");
         hiddenInput3.type = "hidden";
         hiddenInput3.name = "airport";
-        locationBlock.appendChild(hiddenInput3);
-
-        selectItem.appendChild(locationBlock);
-        selectedSpots.add(locationText);
-
-        // 공항 주소를 설정하기 위해 hidden input을 찾음
-        const airportInput = document.getElementById("airport");
 
         // 주변 공항 검색을 위해 선택된 위치의 주소를 사용
         findNearestAirport(locationAddress, (nearestAirport) => {
             if (nearestAirport) {
-                const airportAddress = nearestAirport.formatted_address;
-                airportInput.value = airportAddress; // 공항 주소를 설정
+                const airportAddress = nearestAirport.vicinity;
+                hiddenInput3.value = airportAddress; // 공항 주소를 설정
                 console.log("가장 가까운 공항:", airportAddress);
             } else {
                 console.error("근처에 공항이 없습니다.");
-                airportInput.value = ""; // 공항이 없는 경우 빈 값으로 설정
+                hiddenInput3.value = ""; // 공항이 없는 경우 빈 값으로 설정
             }
         });
+        locationBlock.appendChild(hiddenInput3);
+
+        selectItem.appendChild(locationBlock);
+        selectedSpots.add(locationText);
     }
 
 
@@ -262,40 +249,54 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function findNearestAirport(address, callback) {
+        // 선택된 위치의 주소를 이용하여 주변 공항 검색
         geocoder.geocode({ address: address }, (results, status) => {
+            console.log("Geocoding 결과:", results);
+            console.log("Geocoding 상태:", status);
+            if (status === "OK" && results && results.length > 0) {
+                // 결과가 있고 상태가 "OK"인 경우
+            } else {
+                // 결과가 없거나 상태가 "OK"가 아닌 경우
+            }
             if (status === "OK" && results && results.length > 0) {
                 const location = results[0].geometry.location;
 
-                // 주변 공항 검색
+                // 주변 공항 검색을 위한 요청 설정
                 const request = {
                     location: location,
-                    radius: 100000, // 10km 반경 내에서 검색
+                    radius: 100000, // 100km 반경 내에서 검색
                     type: 'airport' // 공항 타입
                 };
 
+                // PlacesService를 이용하여 주변 공항 검색 요청
                 const placesService = new google.maps.places.PlacesService(map);
-
-                // 주변 공항 검색 요청
                 placesService.nearbySearch(request, (results, status) => {
+                    console.log("Places API 결과:", results);
+                    console.log("Places API 상태:", status);
                     if (status === google.maps.places.PlacesServiceStatus.OK) {
+
+                        // 공항인 결과 필터링
                         const airportResults = results.filter(place => place.types.includes('airport'));
 
                         if (airportResults && airportResults.length > 0) {
+                            // 가장 가까운 공항 선택
                             const nearestAirport = airportResults[0];
                             const airportAddress = nearestAirport.formatted_address;
-                            const airportInput = document.getElementById("airport");
-                            airportInput.value = airportAddress; // 공항 주소를 설정
-                            callback(nearestAirport); // 가장 가까운 공항 반환
+                            // 콜백 함수 호출하여 결과 전달
+                            callback(nearestAirport);
                         } else {
+                            // 근처에 공항이 없는 경우
                             console.error('근처에 공항이 없습니다.');
                             callback(null);
                         }
                     } else {
+                        // 주변 공항 검색 실패
                         console.error(`주변 공항 검색에 실패했습니다. 상태: ${status}`);
                         callback(null);
                     }
                 });
             } else {
+                // 위치를 찾을 수 없는 경우
                 console.error(`위치를 찾을 수 없습니다: ${address}`);
                 callback(null);
             }

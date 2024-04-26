@@ -288,10 +288,10 @@ public class SchedulerController {
 
         /*String origin="인천광역시 중구 공항로424번길 47"; String destination="인천광역시 중구 공항로424번길 47";*/
 
-        List<SchedulerDto> routes = googleMapsService.getOptimalRoute(airport, airport, filteredAdminItems);
+        List<SchedulerDto> routes = googleMapsService.getOptimalRoute(airport,airport, filteredAdminItems);
         System.out.println(routes);
         System.out.println("---------a-a-------------------");
-        System.out.println(airport);
+        /*System.out.println(airport);*/
 
         String[] combinedArray = new String[stayIdArray.length + spotIdArray.length];
         System.arraycopy(stayIdArray, 0, combinedArray, 0, stayIdArray.length);
