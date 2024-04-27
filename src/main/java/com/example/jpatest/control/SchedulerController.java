@@ -201,7 +201,8 @@ public class SchedulerController {
     public String result(@ModelAttribute("schedulerDto") SchedulerDto schedulerDto,
                          @RequestParam("stayId") String stayIds,
                          @RequestParam("stayMark") String stayMarks,
-                         @RequestParam("airport") String airport,
+                         @RequestParam("StartAirport") String StartAirport,
+                         @RequestParam("EndAirport") String EndAirport,
                          Model model, HttpSession session) {
         schedulerDto = (SchedulerDto) session.getAttribute("schedulerDto");
 
@@ -209,22 +210,22 @@ public class SchedulerController {
         // 폼에서 시간과 분을 추출합니다.
         int Shour = Integer.parseInt(schedulerDto.getDepartureHour());
         int Sminute = Integer.parseInt(schedulerDto.getDepartureMinute());
-    /*    int Ehour = Integer.parseInt(schedulerDto.getArrivalHour());
-        int Eminute = Integer.parseInt(schedulerDto.getArrivalMinute());*/
+        int Ehour = Integer.parseInt(schedulerDto.getArrivalHour());
+        int Eminute = Integer.parseInt(schedulerDto.getArrivalMinute());
 
         String durationStart = schedulerDto.getTrip_duration_start();
-        /*String durationEnd = schedulerDto.getTrip_duration_end();*/
+        String durationEnd = schedulerDto.getTrip_duration_end();
 
         // 정규 표현식을 사용하여 월과 일을 추출
         Pattern pattern = Pattern.compile("(\\d+)월 (\\d+)일");
         Matcher startMatcher = pattern.matcher(durationStart);
-        /*Matcher endMatcher = pattern.matcher(durationEnd);*/
+/*        Matcher endMatcher = pattern.matcher(durationEnd);*/
 
         if (startMatcher.find()) {
             // 추출된 월과 일을 정수형으로 변환
             int Smonth = Integer.parseInt(startMatcher.group(1));
             int Sday = Integer.parseInt(startMatcher.group(2));
-      /*      int Emonth = Integer.parseInt(endMatcher.group(1));
+/*            int Emonth = Integer.parseInt(endMatcher.group(1));
             int Eday = Integer.parseInt(endMatcher.group(2));*/
             /*int Year = LocalDateTime.now().getYear();*/
 
@@ -232,7 +233,7 @@ public class SchedulerController {
             LocalDateTime startDateTime = LocalDateTime.of(2024, Smonth, Sday, Shour, Sminute);
             GeneticAlgorithmTSP.setOriginStartTime(startDateTime);
 
-            /*LocalDateTime endDateTime = LocalDateTime.of(2024, Emonth, Eday, Ehour, Eminute);
+/*            LocalDateTime endDateTime = LocalDateTime.of(2024, Emonth, Eday, Ehour, Eminute);
             GeneticAlgorithmTSP.setOriginEndTime(endDateTime);*/
         }
         /*----------------------------------------------------------------------------------*/
@@ -288,7 +289,7 @@ public class SchedulerController {
 
         /*String origin="인천광역시 중구 공항로424번길 47"; String destination="인천광역시 중구 공항로424번길 47";*/
 
-        List<SchedulerDto> routes = googleMapsService.getOptimalRoute(airport,airport, filteredAdminItems);
+        List<SchedulerDto> routes = googleMapsService.getOptimalRoute(StartAirport,EndAirport, filteredAdminItems);
         System.out.println(routes);
         System.out.println("---------a-a-------------------");
         /*System.out.println(airport);*/

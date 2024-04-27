@@ -185,11 +185,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
-    // 선택된 위치에 빨간색 핀을 추가하는 함수
+    // 변수 초기화
+    var airportCounts = {};
+
     function addCityToSelection(locationText, locationId, locationAddress, marker) {
-        if (selectedSpots.has(locationText)) {
-            return;
-        }
         const selectItem = document.getElementById("selectItem");
 
         const locationBlock = document.createElement("div");
@@ -219,6 +218,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 const airportAddress = nearestAirport.vicinity;
                 hiddenInput3.value = airportAddress; // 공항 주소를 설정
                 console.log("가장 가까운 공항:", airportAddress);
+
+                // 공항 주소를 카운트하고, 비교하여 가장 많이 중복된 공항 주소와 가장 적게 중복된 공항 주소를 갱신
+                countAirport(airportAddress);
             } else {
                 console.error("근처에 공항이 없습니다.");
                 hiddenInput3.value = ""; // 공항이 없는 경우 빈 값으로 설정
@@ -228,6 +230,44 @@ document.addEventListener("DOMContentLoaded", () => {
 
         selectItem.appendChild(locationBlock);
         selectedSpots.add(locationText);
+
+        // 추가된 후에 공항 주소 업데이트
+        updateFrequentAirports();
+    }
+
+    function countAirport(address) {
+        if (!airportCounts[address]) {
+            airportCounts[address] = 1; // 해당 주소가 처음 발견되는 경우 1로 초기화
+        } else {
+            airportCounts[address]++; // 이미 발견된 주소인 경우 카운트 증가
+        }
+    }
+
+    function updateFrequentAirports() {
+        var mostFrequentAirport = Object.keys(airportCounts)[0]; // 초기값 설정
+        var leastFrequentAirport = Object.keys(airportCounts)[0]; // 초기값 설정
+
+        for (const airportAddress in airportCounts) {
+            if (airportCounts.hasOwnProperty(airportAddress)) {
+                // 새로운 공항 주소를 현재 가장 많이 중복된 공항 주소와 비교하여 갱신
+                console.log("현재 가장 많이 중복된 공항:", airportCounts[mostFrequentAirport]);
+                console.log("현재 가장 적게 중복된 공항:", airportCounts[leastFrequentAirport]);
+
+                if (airportCounts[airportAddress] > airportCounts[mostFrequentAirport]) {
+                    mostFrequentAirport = airportAddress;
+                    console.log("가장 많이 중복된 공항 변경:", mostFrequentAirport);
+                }
+                // 새로운 공항 주소를 현재 가장 적게 중복된 공항 주소와 비교하여 갱신
+                if (airportCounts[airportAddress] < airportCounts[leastFrequentAirport]) {
+                    leastFrequentAirport = airportAddress;
+                    console.log("가장 적게 중복된 공항 변경:", leastFrequentAirport);
+                }
+            }
+        }
+
+        // 최종 결과를 입력 폼에 반영
+        document.getElementById('StartAirport').value = mostFrequentAirport;
+        document.getElementById('EndAirport').value = leastFrequentAirport;
     }
 
 
