@@ -241,32 +241,27 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
             airportCounts[address]++; // 이미 발견된 주소인 경우 카운트 증가
         }
+
+        // 새로운 공항 주소가 추가되었으므로 가장 많이 중복된 공항과 가장 적게 중복된 공항을 갱신
+        updateFrequentAirports();
     }
 
     function updateFrequentAirports() {
-        var mostFrequentAirport = Object.keys(airportCounts)[0]; // 초기값 설정
-        var leastFrequentAirport = Object.keys(airportCounts)[0]; // 초기값 설정
+        var addresses = Object.keys(airportCounts);
 
-        for (const airportAddress in airportCounts) {
-            if (airportCounts.hasOwnProperty(airportAddress)) {
-                // 새로운 공항 주소를 현재 가장 많이 중복된 공항 주소와 비교하여 갱신
-                console.log("현재 가장 많이 중복된 공항:", airportCounts[mostFrequentAirport]);
-                console.log("현재 가장 적게 중복된 공항:", airportCounts[leastFrequentAirport]);
+        // 공항 주소를 카운트 순으로 정렬
+        addresses.sort(function(a, b) {
+            return airportCounts[b] - airportCounts[a];
+        });
 
-                if (airportCounts[airportAddress] > airportCounts[mostFrequentAirport]) {
-                    mostFrequentAirport = airportAddress;
-                    console.log("가장 많이 중복된 공항 변경:", mostFrequentAirport);
-                }
-                // 새로운 공항 주소를 현재 가장 적게 중복된 공항 주소와 비교하여 갱신
-                if (airportCounts[airportAddress] < airportCounts[leastFrequentAirport]) {
-                    leastFrequentAirport = airportAddress;
-                    console.log("가장 적게 중복된 공항 변경:", leastFrequentAirport);
-                }
-            }
-        }
-
-        // 최종 결과를 입력 폼에 반영
+        // 가장 많이 중복된 공항을 설정
+        var mostFrequentAirport = addresses[0];
+        console.log("가장 많이 중복된 공항 변경:", mostFrequentAirport);
         document.getElementById('StartAirport').value = mostFrequentAirport;
+
+        // 가장 적게 중복된 공항을 설정
+        var leastFrequentAirport = addresses[addresses.length - 1];
+        console.log("가장 적게 중복된 공항 변경:", leastFrequentAirport);
         document.getElementById('EndAirport').value = leastFrequentAirport;
     }
 
