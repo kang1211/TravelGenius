@@ -115,6 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const spotName = spot.querySelector('.spot-name').textContent;
             const spotId = spot.querySelector('.D').textContent.trim();
             const spotAddress = spot.querySelector('.spot-address').textContent.trim();
+            const contentType = spot.getAttribute('data-content-type');
 
             checkbox.addEventListener('change', (event) => {
                 const locationText = spotName;
@@ -137,7 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             });
 
                             markers.push(marker);
-                            addCityToSelection(locationText, spotId, spotAddress, marker);
+                            addCityToSelection(locationText, spotId, spotAddress,contentType, marker);
                             map.panTo(location);
                         } else {
                             console.error("위치를 찾을 수 없습니다.");
@@ -162,7 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    function addCityToSelection(locationText, locationId, locationAddress, marker) {
+    function addCityToSelection(locationText, locationId, locationAddress,contentType, marker) {
         if (selectedSpots.has(locationText)) {
             return;
         }
@@ -185,6 +186,12 @@ document.addEventListener("DOMContentLoaded", () => {
         hiddenInput2.name = "spotMark";
         hiddenInput2.value = locationAddress;
         locationBlock.appendChild(hiddenInput2);
+
+        const hiddenInput3 = document.createElement("input");
+        hiddenInput3.type = "hidden";
+        hiddenInput3.name = "contentType";
+        hiddenInput3.value = contentType;
+        locationBlock.appendChild(hiddenInput3);
 
         selectItem.appendChild(locationBlock);
         selectedSpots.add(locationText);

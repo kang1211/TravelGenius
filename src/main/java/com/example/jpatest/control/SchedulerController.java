@@ -219,7 +219,7 @@ public class SchedulerController {
         // 정규 표현식을 사용하여 월과 일을 추출
         Pattern pattern = Pattern.compile("(\\d+)월 (\\d+)일");
         Matcher startMatcher = pattern.matcher(durationStart);
-/*        Matcher endMatcher = pattern.matcher(durationEnd);*/
+        /*        Matcher endMatcher = pattern.matcher(durationEnd);*/
 
         if (startMatcher.find()) {
             // 추출된 월과 일을 정수형으로 변환
@@ -290,9 +290,9 @@ public class SchedulerController {
         /*String origin="인천광역시 중구 공항로424번길 47"; String destination="인천광역시 중구 공항로424번길 47";*/
 
         List<SchedulerDto> routes = googleMapsService.getOptimalRoute(StartAirport,EndAirport, filteredAdminItems);
+        System.out.println(routes);
         System.out.println("---------a-a-------------------");
-        System.out.println(StartAirport);
-        System.out.println(EndAirport);
+        /*System.out.println(airport);*/
 
         String[] combinedArray = new String[stayIdArray.length + spotIdArray.length];
         System.arraycopy(stayIdArray, 0, combinedArray, 0, stayIdArray.length);
