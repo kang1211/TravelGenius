@@ -262,7 +262,30 @@ document.addEventListener("DOMContentLoaded", () => {
         // 가장 적게 중복된 공항을 설정
         var leastFrequentAirport = addresses[addresses.length - 1];
         console.log("가장 적게 중복된 공항 변경:", leastFrequentAirport);
-        document.getElementById('EndAirport').value = leastFrequentAirport;
+
+        // 선택된 위치가 있는 경우
+        if (selectedSpots.size > 0) {
+            const lastSelectedSpot = Array.from(selectedSpots)[selectedSpots.size - 1];
+            const lastSelectedSpotBlock = document.querySelector(`.selected-item[data-location="${lastSelectedSpot}"]`);
+            const lastSelectedSpotAirport = lastSelectedSpotBlock.querySelector('input[name="airport"]').value;
+
+            // 마지막 선택된 위치의 공항 주소를 먼저 사용
+            if (!lastSelectedSpotAirport) {
+                document.getElementById('EndAirport').value = lastSelectedSpotAirport;
+            } else {
+                // 마지막 선택된 위치의 공항 주소가 없는 경우 새로운 공항 주소를 등록
+                const hiddenInput = document.createElement("input");
+                hiddenInput.type = "hidden";
+                hiddenInput.name = "airport";
+                hiddenInput.value = leastFrequentAirport;
+                lastSelectedSpotBlock.appendChild(hiddenInput);
+                document.getElementById('EndAirport').value = leastFrequentAirport;
+            }
+        } else {
+            // 선택된 위치가 없는 경우에는 가장 적게 중복된 공항 주소를 사용
+            document.getElementById('EndAirport').value = leastFrequentAirport;
+        }
+
     }
 
 
