@@ -5,6 +5,7 @@ import com.example.jpatest.entity.AdminItemEntity;
 import com.example.jpatest.entity.LocalEntity;
 import com.example.jpatest.entity.Scheduler;
 import com.example.jpatest.repository.LocalRepository;
+import com.example.jpatest.repository.SchedulerRepository;
 import com.example.jpatest.service.AdminItemService;
 import com.example.jpatest.service.GoogleMapsService;
 import com.example.jpatest.service.SchedulerService;
@@ -39,8 +40,9 @@ public class SchedulerController {
     private final LocalRepository localRepository;
     private final GoogleMapsService googleMapsService;
     private final AdminItemService adminItemService;
-    /*private final GeneticAlgorithmTSP geneticAlgorithmTSP;*/
+    private final SchedulerRepository schedulerRepository; // 스프링에 의해 주입됨
     private static final Logger logger = LoggerFactory.getLogger(SchedulerController.class);
+
 
     @GetMapping("/first")
     public String first(Model model, HttpSession session) {
@@ -377,6 +379,9 @@ public class SchedulerController {
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         session.setAttribute("stayIds", stayIds);
         session.setAttribute("stayMarks", stayMarks);
+        session.setAttribute("StartAirport", StartAirport);
+        session.setAttribute("EndAirport", EndAirport);
+
         model.addAttribute("adminItemEntity0", day1Routes);
         model.addAttribute("adminItemEntity1", day2Routes);
         model.addAttribute("adminItemEntity2", day3Routes);
@@ -396,6 +401,43 @@ public class SchedulerController {
         return "scheduler/result";
     }
 
+    @PostMapping("/save")
+    public String save(Model model, HttpSession session) {
+        String localIds = (String) session.getAttribute("localIds");
+        String spotIds = (String) session.getAttribute("spotIds");
+        String spotMarks = (String) session.getAttribute("spotMarks");
+        String stayIds = (String) session.getAttribute("stayIds");
+        String stayMarks = (String) session.getAttribute("stayMarks");
+        SchedulerDto schedule = (SchedulerDto) session.getAttribute("schedulerDto");
+
+        // SchedulerDto에서 필요한 데이터를 가져와서 엔티티에 저장
+        String departureHour = schedule.getDepartureHour();
+        String departureMinute = schedule.getDepartureMinute();
+        String arrivalHour = schedule.getArrivalHour();
+        String arrivalMinute = schedule.getArrivalMinute();
+        String tripDurationStart = schedule.getTrip_duration_start();
+        String tripDurationEnd = schedule.getTrip_duration_end();
+
+        // DTO에 값 설정
+        Scheduler scheduler = new Scheduler();
+        scheduler.setLocalIds(localIds);
+        scheduler.setSpotIds(spotIds);
+        scheduler.setSpotMarks(spotMarks);
+        scheduler.setStayIds(stayIds);
+        scheduler.setStayMarks(stayMarks);
+        scheduler.setDepartureHour(departureHour);
+        scheduler.setDepartureMinute(departureMinute);
+        scheduler.setArrivalHour(arrivalHour);
+        scheduler.setArrivalMinute(arrivalMinute);
+        scheduler.setTrip_duration_start(tripDurationStart);
+        scheduler.setTrip_duration_end(tripDurationEnd);
+
+        // SchedulerRepository를 사용하여 엔티티를 저장
+        schedulerRepository.save(scheduler);
+
+        // 여기서 모델에 추가 작업을 수행하거나 리디렉션할 경로를 반환할 수 있습니다.
+        return "redirect:/";
+    }
     @GetMapping("/second")
     public String getSecondPage(Model model, HttpSession session) {
         SchedulerDto schedulerDto = (SchedulerDto) session.getAttribute("schedulerDto");

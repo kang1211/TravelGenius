@@ -15,7 +15,7 @@
 </th:block>
 
 <div layout:fragment="content">
-    <form th:action="@{/schedulers/result}" th:object="${schedulerDto}" method="post" class="box">
+    <form th:action="@{/schedulers/save}" th:object="${schedulerDto}" method="post" class="box">
         <input type="hidden" id="localId">
         <input type="hidden" id="stayMarks" th:value="${session.stayMarks}">
         <input type="hidden" id="spotMarks" th:value="${session.spotMarks}">
@@ -284,7 +284,7 @@
                 </div>
             </div>
             <div style="cursor:pointer;width:150px;height:80px;background-color:white;border-radius:10px;display:flex;justify-content:center;align-items:center;margin-bottom:30px;">
-                <button type="submit" onclick="saveSelectedLocations()" style="background-color: white; border: none; cursor: pointer; color:black;font-size:30px;font-family:LINE Seed Sans KR;">저장하기</button>
+                <button type="submit" style="background-color: white; border: none; cursor: pointer; color:black;font-size:30px;font-family:LINE Seed Sans KR;">저장하기</button>
             </div>
         </div>
     </form>
