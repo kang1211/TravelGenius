@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
+import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -16,6 +17,8 @@ import com.querydsl.core.types.Path;
 public class QScheduler extends EntityPathBase<Scheduler> {
 
     private static final long serialVersionUID = 1601332226L;
+
+    private static final PathInits INITS = PathInits.DIRECT2;
 
     public static final QScheduler scheduler = new QScheduler("scheduler");
 
@@ -31,6 +34,8 @@ public class QScheduler extends EntityPathBase<Scheduler> {
 
     public final StringPath localIds = createString("localIds");
 
+    public final QMember schedulerMemberId;
+
     public final StringPath spotIds = createString("spotIds");
 
     public final StringPath spotMarks = createString("spotMarks");
@@ -44,15 +49,24 @@ public class QScheduler extends EntityPathBase<Scheduler> {
     public final StringPath trip_duration_start = createString("trip_duration_start");
 
     public QScheduler(String variable) {
-        super(Scheduler.class, forVariable(variable));
+        this(Scheduler.class, forVariable(variable), INITS);
     }
 
     public QScheduler(Path<? extends Scheduler> path) {
-        super(path.getType(), path.getMetadata());
+        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
     public QScheduler(PathMetadata metadata) {
-        super(Scheduler.class, metadata);
+        this(metadata, PathInits.getFor(metadata, INITS));
+    }
+
+    public QScheduler(PathMetadata metadata, PathInits inits) {
+        this(Scheduler.class, metadata, inits);
+    }
+
+    public QScheduler(Class<? extends Scheduler> type, PathMetadata metadata, PathInits inits) {
+        super(type, metadata, inits);
+        this.schedulerMemberId = inits.isInitialized("schedulerMemberId") ? new QMember(forProperty("schedulerMemberId")) : null;
     }
 
 }

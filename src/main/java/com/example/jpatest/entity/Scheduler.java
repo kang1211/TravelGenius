@@ -10,9 +10,14 @@ import java.util.List;
 @Getter
 @Setter
 public class Scheduler {
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member schedulerMemberId;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // 식별자 (primary key)
+    private Long id;
 
     @Column
     private String departureHour;
@@ -37,7 +42,9 @@ public class Scheduler {
     @Column
     private String stayMarks;
 
-    public static Scheduler createScheduler(SchedulerDto schedulerDto) {
+
+
+    public static Scheduler createScheduler(SchedulerDto schedulerDto, Member member) {
         Scheduler scheduler = new Scheduler();
         scheduler.setArrivalHour(schedulerDto.getArrivalHour());
         scheduler.setArrivalMinute(schedulerDto.getArrivalMinute());
@@ -45,6 +52,9 @@ public class Scheduler {
         scheduler.setDepartureMinute(schedulerDto.getDepartureMinute());
         scheduler.setTrip_duration_start(schedulerDto.getTrip_duration_start());
         scheduler.setTrip_duration_end(schedulerDto.getTrip_duration_end());
+        scheduler.setSchedulerMemberId(member); // Set the member for the scheduler
         return scheduler;
     }
+
 }
+

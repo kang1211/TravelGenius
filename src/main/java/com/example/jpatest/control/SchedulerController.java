@@ -3,22 +3,27 @@ package com.example.jpatest.control;
 import com.example.jpatest.dto.SchedulerDto;
 import com.example.jpatest.entity.AdminItemEntity;
 import com.example.jpatest.entity.LocalEntity;
+import com.example.jpatest.entity.Member;
 import com.example.jpatest.entity.Scheduler;
 import com.example.jpatest.repository.LocalRepository;
 import com.example.jpatest.repository.SchedulerRepository;
 import com.example.jpatest.service.AdminItemService;
 import com.example.jpatest.service.GoogleMapsService;
+import com.example.jpatest.service.MemberService;
 import com.example.jpatest.service.SchedulerService;
 import com.example.jpatest.util.GeneticAlgorithmTSP;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
@@ -30,6 +35,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static com.example.jpatest.entity.QMember.member;
+
 
 @Controller
 @RequiredArgsConstructor
@@ -40,7 +47,9 @@ public class SchedulerController {
     private final LocalRepository localRepository;
     private final GoogleMapsService googleMapsService;
     private final AdminItemService adminItemService;
-    private final SchedulerRepository schedulerRepository; // 스프링에 의해 주입됨
+    private final SchedulerRepository schedulerRepository;
+    private final MemberService memberService;
+
     private static final Logger logger = LoggerFactory.getLogger(SchedulerController.class);
 
 
@@ -402,7 +411,16 @@ public class SchedulerController {
     }
 
     @PostMapping("/save")
-    public String save(Model model, HttpSession session) {
+    public String save(Model model, HttpSession session, Principal principal) {
+        // 현재 로그인한 사용자의 정보를 가져옵니다.
+        String loggedInUsername = principal.getName();
+
+        Member loggedInMember = memberService.findByEmail(loggedInUsername);
+        if (loggedInMember == null) {
+            // 현재 로그인한 사용자 정보가 없는 경우 에러 처리
+            return "redirect:/members/mymenu"; // 적절한 에러 페이지로 리다이렉트 또는 에러 메시지 표시
+        }
+
         String localIds = (String) session.getAttribute("localIds");
         String spotIds = (String) session.getAttribute("spotIds");
         String spotMarks = (String) session.getAttribute("spotMarks");
@@ -418,7 +436,7 @@ public class SchedulerController {
         String tripDurationStart = schedule.getTrip_duration_start();
         String tripDurationEnd = schedule.getTrip_duration_end();
 
-        // DTO에 값 설정
+        // Scheduler 객체 생성 및 현재 로그인한 사용자의 Member 객체 설정
         Scheduler scheduler = new Scheduler();
         scheduler.setLocalIds(localIds);
         scheduler.setSpotIds(spotIds);
@@ -431,11 +449,14 @@ public class SchedulerController {
         scheduler.setArrivalMinute(arrivalMinute);
         scheduler.setTrip_duration_start(tripDurationStart);
         scheduler.setTrip_duration_end(tripDurationEnd);
+        scheduler.setSchedulerMemberId(loggedInMember); // 현재 로그인한 사용자의 Member 객체 설정
 
         // SchedulerRepository를 사용하여 엔티티를 저장
         schedulerRepository.save(scheduler);
 
-        // 여기서 모델에 추가 작업을 수행하거나 리디렉션할 경로를 반환할 수 있습니다.
+        // 세션 비우기
+        session.invalidate();
+
         return "redirect:/";
     }
     @GetMapping("/second")
