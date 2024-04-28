@@ -39,6 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
                    const spotAddress = item.querySelector('.initialLocal').textContent;
                    const spotName = item.querySelector('.initialSpotName').textContent;
                    const initId = item.querySelector('.initialId').textContent.trim();
+                   const contentType = item.querySelector('.initialContentType').textContent;
                    const locationAddress = spotAddress;
                    const locationText = spotName;
 
@@ -60,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
                            });
 
                            markers.push(marker);
-                           addCityToSelection(locationText,initId,locationAddress, marker);
+                           addCityToSelection(locationText,initId,locationAddress,contentType, marker);
                            map.panTo(location);
                        } else {
                            console.error("위치를 찾을 수 없습니다.");
@@ -76,6 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
                    const spotAddress = item.querySelector('.initialLocal').textContent;
                    const spotName = item.querySelector('.initialSpotName').textContent;
                    const initId = item.querySelector('.initialId').textContent.trim();
+                   const contentType = item.querySelector('.initialContentType').textContent;
                    const locationAddress = spotAddress;
                    const locationText = spotName;
 
@@ -97,7 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
                            });
 
                            markers.push(marker);
-                           addCityToSelection(locationText,initId,locationAddress, marker);
+                           addCityToSelection(locationText,initId,locationAddress,contentType, marker);
                            map.panTo(location);
                        } else {
                            console.error("위치를 찾을 수 없습니다.");

@@ -43,11 +43,13 @@
                             <div class="initialSpotName" th:text="${initialItem.touristSpotName}"></div>
                             <div class="initialLocal" th:text="${initialItem.address}"></div>
                             <div class="initialId" th:text="${initialItem.id}"></div>
+                            <div class="initialContentType" th:text="${initialItem.contentType}"></div>
                         </div>
                         <div class="initialItem2" th:if="${initItemEntitySpot != null}" th:each="initialItem : ${initItemEntitySpot}" style="display:none;">
                             <div class="initialSpotName" th:text="${initialItem.touristSpotName}"></div>
                             <div class="initialLocal" th:text="${initialItem.address}"></div>
                             <div class="initialId" th:text="${initialItem.id}"></div>
+                            <div class="initialContentType" th:text="${initialItem.contentType}"></div>
                         </div>
                     </div>
                 </div>
@@ -249,6 +251,7 @@ $(document).ready(function() {
 
 });
 function saveSelectedLocations() {
+    const dayDifference = calculateTravelDuration(); // 여행 기간을 계산하고 반환된 값 저장
     const selectedItems = document.querySelectorAll(".selected-item");
     let spotCount = 0;
     let restaurantCount = 0;
@@ -264,7 +267,7 @@ function saveSelectedLocations() {
     });
 
     // 선택된 명소와 식당의 수가 조건을 만족하는지 확인
-    if (spotCount < 2 || restaurantCount < 1) {
+    if (spotCount < 2 * dayDifference || restaurantCount < 1 * dayDifference) {
         alert("하루에 명소 2개와 식당 1개를 선택해야 합니다.");
         return false; // 폼 제출 중지
     }
@@ -285,7 +288,7 @@ function calculateTravelDuration() {
     const endDate = new Date(`${currentYear}-${parseDate(durationEnd)}`);
 
     // DurationStart와 DurationEnd 사이의 일수 계산
-    const timeDifference = endDate.getTime() - startDate.getTime()-1;
+    const timeDifference = endDate.getTime() - startDate.getTime();
     const dayDifference = Math.ceil(timeDifference / (1000 * 3600 * 24)); // 밀리초로 계산된 차이를 일수로 변환
 
     return dayDifference;

@@ -135,6 +135,7 @@ public class SchedulerController {
     public String Fourth(@ModelAttribute("schedulerDto") SchedulerDto schedulerDto,
                          @RequestParam("spotId") String spotIds,
                          @RequestParam("spotMark") String spotMarks,
+                         @RequestParam("contentType") String contentTypes,
                          Model model, HttpSession session) {
         /*/////////////////////////추가///////////////////////////////*/
         try {
@@ -183,12 +184,12 @@ public class SchedulerController {
             session.setAttribute("schedulerDto", schedulerDto);
             session.setAttribute("spotIds", spotIds);
             session.setAttribute("spotMarks", spotMarks);
+            session.setAttribute("contentTypes", contentTypes);
 
             System.out.println(localIds);
             System.out.println(spotIds);
-            System.out.println(schedulerDto.getTrip_duration_end());
             System.out.println("--------------------------!!");
-            System.out.println(stayIds);
+            System.out.println(contentTypes);
 
             return "scheduler/fourth";
         }catch(Exception e){
@@ -439,6 +440,7 @@ public class SchedulerController {
         String localIds = (String) session.getAttribute("localIds");
         String spotIds = (String) session.getAttribute("spotIds");
         String spotMarks = (String) session.getAttribute("spotMarks");
+        String contentTypes = (String) session.getAttribute("contentTypes");
         model.addAttribute("schedulerDto", schedulerDto);
         model.addAttribute("localIds", localIds);
 
@@ -484,6 +486,7 @@ public class SchedulerController {
 
             session.setAttribute("spotMarks", spotMarks); // localIds는 쉼표(,)로 구분된 문자열입니다.
 
+            session.setAttribute("contentTypes", contentTypes); // localIds는 쉼표(,)로 구분된 문자열입니다.
             return "scheduler/third";
         } catch (Exception e) {
             // 오류 발생 시 예외 처리
