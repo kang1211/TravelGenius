@@ -25,6 +25,7 @@ public class SchedulerDto {
     private double lat;
     private double lng;
     private LocalDateTime arrivalTime;
+    private LocalDateTime departureTime;
     private Long resultItemId;
     private Long id; // 식별자(ID) 필드
 

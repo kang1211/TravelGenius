@@ -313,16 +313,12 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log("Geocoding 상태:", status);
             if (status === "OK" && results && results.length > 0) {
                 // 결과가 있고 상태가 "OK"인 경우
-            } else {
-                // 결과가 없거나 상태가 "OK"가 아닌 경우
-            }
-            if (status === "OK" && results && results.length > 0) {
                 const location = results[0].geometry.location;
 
                 // 주변 공항 검색을 위한 요청 설정
                 const request = {
                     location: location,
-                    radius: 100000, // 100km 반경 내에서 검색
+                    radius: 50000, // 최대 반경 50km로 설정
                     type: 'airport' // 공항 타입
                 };
 
@@ -334,7 +330,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (status === google.maps.places.PlacesServiceStatus.OK) {
 
                         // 공항인 결과 필터링
-                        const airportResults = results.filter(place => place.types.includes('airport'));
+                        // 공항 타입을 필터링하는 대신, 장소의 이름을 기반으로 필터링
+                        const airportResults = results.filter(place => place.types.includes('airport') && !place.name.includes('드론비행장'));
 
                         if (airportResults && airportResults.length > 0) {
                             // 가장 가까운 공항 선택
@@ -360,6 +357,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
 
     initMap(initialLocalValue);
 });
