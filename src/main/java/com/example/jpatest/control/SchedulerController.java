@@ -544,6 +544,7 @@ public class SchedulerController {
     }
     @GetMapping("/third")
     public String getThirdPage(Model model, HttpSession session) {
+
         SchedulerDto schedulerDto = (SchedulerDto) session.getAttribute("schedulerDto");
         String localIds = (String) session.getAttribute("localIds");
         String spotIds = (String) session.getAttribute("spotIds");
@@ -563,7 +564,7 @@ public class SchedulerController {
             List<AdminItemEntity> initialItems = adminItemService.findByIds(itemIdList); // 에러발생
 
             if (initialItems != null && !initialItems.isEmpty()) {
-                model.addAttribute("initialItemSpot", initialItems); // LocalEntity 객체 목록을 추가합니다.
+                /*model.addAttribute("initialItemSpot", initialItems); // LocalEntity 객체 목록을 추가합니다.*/
             }
             //---------------------------추가-------------------------------------
 
@@ -604,6 +605,7 @@ public class SchedulerController {
     }
     @GetMapping("/fourth")
     public String getFourthPage(Model model, HttpSession session) {
+
         SchedulerDto schedulerDto = (SchedulerDto) session.getAttribute("schedulerDto");
         String localIds = (String) session.getAttribute("localIds");
         String stayIds = (String) session.getAttribute("stayIds");
@@ -623,7 +625,7 @@ public class SchedulerController {
 
             if (initialItems != null && !initialItems.isEmpty()) {
                 // initialLocal 정보를 기반으로 지도의 초기 좌표 설정
-                model.addAttribute("initialItemStay", initialItems); // LocalEntity 객체 목록을 추가합니다.
+                /*model.addAttribute("initialItemStay", initialItems); // LocalEntity 객체 목록을 추가합니다.*/
             }
             //---------------------------추가-------------------------------------
 

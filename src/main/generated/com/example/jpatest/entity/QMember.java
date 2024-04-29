@@ -20,8 +20,6 @@ public class QMember extends EntityPathBase<Member> {
 
     public static final QMember member = new QMember("member1");
 
-    public final QBaseEntity _super = new QBaseEntity(this);
-
     public final StringPath addr1 = createString("addr1");
 
     public final StringPath addr2 = createString("addr2");
@@ -30,27 +28,15 @@ public class QMember extends EntityPathBase<Member> {
 
     public final ListPath<Comment, QComment> comments = this.<Comment, QComment>createList("comments", Comment.class, QComment.class, PathInits.DIRECT2);
 
-    //inherited
-    public final StringPath createdBy = _super.createdBy;
-
     public final StringPath email = createString("email");
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    //inherited
-    public final StringPath modifiedBy = _super.modifiedBy;
-
     public final StringPath password = createString("password");
-
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> regTime = _super.regTime;
 
     public final EnumPath<com.example.jpatest.constant.Role> role = createEnum("role", com.example.jpatest.constant.Role.class);
 
     public final StringPath tel = createString("tel");
-
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> updateTime = _super.updateTime;
 
     public final StringPath zipCode = createString("zipCode");
 
