@@ -454,6 +454,7 @@ public class SchedulerController {
 
     @PostMapping("/save")
     public String save(Model model, HttpSession session, Principal principal) {
+        // 현재 로그인한 사용자의 정보를 가져옵니다.
         if (principal == null) {
             // 로그인되지 않은 사용자인 경우 처리
             return "redirect:/members/login"; // 로그인 페이지로 리다이렉트
@@ -544,6 +545,8 @@ public class SchedulerController {
     }
     @GetMapping("/third")
     public String getThirdPage(Model model, HttpSession session) {
+        session.removeAttribute("stayIds");
+        session.removeAttribute("stayMarks");
 
         SchedulerDto schedulerDto = (SchedulerDto) session.getAttribute("schedulerDto");
         String localIds = (String) session.getAttribute("localIds");
@@ -605,7 +608,6 @@ public class SchedulerController {
     }
     @GetMapping("/fourth")
     public String getFourthPage(Model model, HttpSession session) {
-
         SchedulerDto schedulerDto = (SchedulerDto) session.getAttribute("schedulerDto");
         String localIds = (String) session.getAttribute("localIds");
         String stayIds = (String) session.getAttribute("stayIds");
@@ -671,7 +673,7 @@ public class SchedulerController {
         if(StartAirport.contains("공항로")) reFilteredAdminItems.add(googleMapsService.getScheduler(193L));
         if(StartAirport.contains("강서구 공항진입로") )reFilteredAdminItems.add(googleMapsService.getScheduler(194L));
         if(StartAirport.contains("하늘길") )reFilteredAdminItems.add(googleMapsService.getScheduler(195L));
-        if(StartAirport.contains("오타구 하네다쿠코") )reFilteredAdminItems.add(googleMapsService.getScheduler(208L));
+        if(StartAirport.contains("오타구 하네다쿠코") )reFilteredAdminItems.add(googleMapsService.getScheduler(209L));
     }
     public void addSchedulersByEndLocations(List<AdminItemEntity> reFilteredAdminItems, String EndAirport){
         if(EndAirport.contains("인천광역시")) reFilteredAdminItems.add(googleMapsService.getScheduler(191L));
@@ -679,7 +681,7 @@ public class SchedulerController {
         if(EndAirport.contains("공항로")) reFilteredAdminItems.add(googleMapsService.getScheduler(193L));
         if(EndAirport.contains("강서구 공항진입로")) reFilteredAdminItems.add(googleMapsService.getScheduler(194L));
         if(EndAirport.contains("하늘길") )reFilteredAdminItems.add(googleMapsService.getScheduler(195L));
-        if(EndAirport.contains("오타구 하네다쿠코") )reFilteredAdminItems.add(googleMapsService.getScheduler(208L));
+        if(EndAirport.contains("오타구 하네다쿠코") )reFilteredAdminItems.add(googleMapsService.getScheduler(209L));
     }
 
 }

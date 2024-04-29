@@ -1,333 +1,300 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
-  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-  layout:decorate="~{fragment/basic}">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragment/basic}">
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
 
 <th:block layout:fragment="css">
-<link rel="stylesheet" th:href="@{/css/scheduler/scheduler.css}">
-<link rel="stylesheet" th:href="@{/css/scheduler/fourth.css}">
+    <link rel="stylesheet" th:href="@{/css/scheduler/scheduler.css}">
+    <link rel="stylesheet" th:href="@{/css/scheduler/fourth.css}">
 </th:block>
 
 <th:block layout:fragment="script">
-<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
 </th:block>
 
 <div layout:fragment="content">
-<form th:action="@{/schedulers/result}" th:object="${schedulerDto}" method="post" class="box">
-    <input type="hidden" id="localId">
-    <input type="hidden" name="StartAirport" id="StartAirport" value="">
-    <input type="hidden" name="EndAirport" id="EndAirport" value="">
-    <input type="hidden" id="spotMarks" th:value="${session.spotMarks}">
-    <div id="calendar" style="height:45px; width:100%;display:flex;position:absolute;top:105px;">
-        <input type="text" id="DurationStart" readonly th:value="${schedulerDto.trip_duration_start}" style="padding-top:8px;font-family:LINE Seed Sans KR; font-weight:bold;width:80px;text-align:center;font-size:20px;background-color:transparent;border:none;color:white;margin-left:1200px;">
-        <p style="padding-top:8px;font-family:LINE Seed Sans KR; font-weight:bold;width:80px;text-align:center;font-size:20px;background-color:transparent;border:none;color:white;"> - </p>
-        <input type="text" id="DurationEnd" readonly th:value="${schedulerDto.trip_duration_end}" style="padding-top:8px;font-family:LINE Seed Sans KR; font-weight:bold;width:80px;text-align:center;font-size:20px;background-color:transparent;border:none;color:white;">
-        <p id="weekday_display" style="font-family:LINE Seed Sans KR; font-weight:bold;width:auto;text-align:center;font-size:20px;background-color:transparent;border:none;color:white;"></p>
-    </div>
+    <form th:action="@{/schedulers/result}" th:object="${schedulerDto}" method="post" class="box">
+        <input type="hidden" id="localId">
+        <input type="hidden" name="StartAirport" id="StartAirport" value="">
+        <input type="hidden" name="EndAirport" id="EndAirport" value="">
+        <input type="hidden" id="spotMarks" th:value="${session.spotMarks}">
+        <div id="calendar" style="height:45px; width:100%;display:flex;position:absolute;top:105px;">
+            <input type="text" id="DurationStart" readonly th:value="${schedulerDto.trip_duration_start}" style="padding-top:8px;font-family:LINE Seed Sans KR; font-weight:bold;width:80px;text-align:center;font-size:20px;background-color:transparent;border:none;color:white;margin-left:1200px;">
+            <p style="padding-top:8px;font-family:LINE Seed Sans KR; font-weight:bold;width:80px;text-align:center;font-size:20px;background-color:transparent;border:none;color:white;"> - </p>
+            <input type="text" id="DurationEnd" readonly th:value="${schedulerDto.trip_duration_end}" style="padding-top:8px;font-family:LINE Seed Sans KR; font-weight:bold;width:80px;text-align:center;font-size:20px;background-color:transparent;border:none;color:white;">
+            <p id="weekday_display" style="font-family:LINE Seed Sans KR; font-weight:bold;width:auto;text-align:center;font-size:20px;background-color:transparent;border:none;color:white;"></p>
+        </div>
 
-    <div style="width:89%;display:flex;justify-content:space-around;align-items:center;">
+        <div style="width:89%;display:flex;justify-content:space-around;align-items:center;">
 
-        <div id="map" style="width:650px;height:650px;margin:100px;border-radius:10px;"></div>
-        <input type="hidden" id="initialLocal" th:value="${initialLocal.local}">
-        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBKfXUB5b-aS6hLNA93HhTe6UNIqXZkizs&libraries=places,geometry&callback=initMap&v=weekly" defer></script>
+            <div id="map" style="width:650px;height:650px;margin:100px;border-radius:10px;"></div>
+            <input type="hidden" id="initialLocal" th:value="${initialLocal.local}">
+            <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBKfXUB5b-aS6hLNA93HhTe6UNIqXZkizs&libraries=places,geometry&callback=initMap&v=weekly" defer></script>
 
-        <div style="width:800px;height:100%;display:flex;justify-content:center;flex-wrap:wrap;align-items:center;">
-            <p style="height:50px;padding:0;margin:0;width:100%;font-size:20px;font-family:LINE Seed Sans KR;font-weight:bold;display:flex;justify-content:center; align-items:center;color:white;">이용하실 교통수단을 골라주세요</p>
-            <div id="button_item_box" style="display:flex; flex-direction:column;">
-                <div id="button_box" style="display: flex; justify-content: center; align-items:center;width:100%;margin:10px 0;">
-                    <button class="Transportation" value="MassTransit" type="button" style="background:#717FFF;color: white;">대중교통</button>
-                    <button class="Transportation" value="Rental" type="button" style="background:none;color: #717FFF;">렌트</button>
-                    <input type="hidden" id="transportation">
-                </div>
-
-                <div id="selectItem">
-                    <div class="initialItem" th:if="${initialItemStay != null}" th:each="A : ${initialItemStay}" style="display:none;">
-                        <div class="initialStayName" th:text="${A.touristSpotName}"></div>
-                        <div class="initialLocal" th:text="${A.address}"></div>
-                        <div class="initialId" th:text="${A.id}"></div>
+            <div style="width:800px;height:100%;display:flex;justify-content:center;flex-wrap:wrap;align-items:center;">
+                <p style="height:50px;padding:0;margin:0;width:100%;font-size:20px;font-family:LINE Seed Sans KR;font-weight:bold;display:flex;justify-content:center; align-items:center;color:white;">이용하실 교통수단을 골라주세요</p>
+                <div id="button_item_box" style="display:flex; flex-direction:column;">
+                    <div id="button_box" style="display: flex; justify-content: center; align-items:center;width:100%;margin:10px 0;">
+                        <button class="Transportation" value="MassTransit" type="button" style="background:#717FFF;color: white;">대중교통</button>
+                        <button class="Transportation" value="Rental" type="button" style="background:none;color: #717FFF;">렌트</button>
+                        <input type="hidden" id="transportation">
                     </div>
-                    <div class="initialItem2" th:if="${initItemEntityStay != null}" th:each="B : ${initItemEntityStay}" style="display:none;">
-                        <div class="initialStayName" th:text="${B.touristSpotName}"></div>
-                        <div class="initialLocal" th:text="${B.address}"></div>
-                        <div class="initialId" th:text="${B.id}"></div>
-                    </div>
-                </div>
-            </div>
 
-            <div style="height:100px;width:600px;display:flex;justify-content:center;align-items:center;">
-                <div style="width:500px;height:50px;display:flex;align-items:center;background-color:#004392;border:3px solid white;border-radius:10px;">
-                    <input style="width:100%;height:100%;border:none;" type="text" id="locationInput" placeholder="원하시는 특징 또는 이름을 검색하세요">
-                    <button id="searchButton" style="width:70px;height:100%;color:white;font-size:30px;font-weight:bold;background:black;border-left:1px solid white;border-top-right-radius: 10px;border-bottom-right-radius: 10px;" type="button" ><i class="bi bi-search"></i></button>
-                </div>
-            </div>
-
-            <div id="lcBox">
-                <div id="locationList">
-                    <div th:each="stay : ${adminItemEntity}" th:if="${stay != null}" class="contents" th:attr="data-content-type=${stay.contentType}" style="height:115px;width:500px; display:flex; justify-content:left; align-items:center; border-radius:10px;background-color: rgba(0, 117, 255, 0.5); margin-bottom:10px;">
-                        <div class="stay-image" th:style="'margin:10px; border-radius:8px; width:120px; height:100px; background-image: url(' + ${stay.imgUrl} + '); background-position:center; background-size:cover;'"></div>
-                        <div class="stay-details" style="display:flex; justify-content:start;flex-wrap:wrap; padding-right:20px;width:450px;">
-                            <p class="stay-name" th:text="${stay.touristSpotName}" for="locationCheckBox1" th:value="${stay.id}"></p>
-                            <p class="stay-features" th:text="${stay.features}" style="color:white;font-size:15px;padding:0;margin:0;"></p>
-                            <p class="D" th:text="${stay.id}" style="display:none;"></p>
-                            <p class="stay-address" th:text="${stay.address}" style="display:none;"></p>
-                            <p class="stay-contact" th:text="${stay.contact}" style="display:none;"></p>
-                            <div class="day-time-entry" th:each="entry : ${stay.businessHours}" style="display:none">
-                                <label th:text="${entry.key}"></label>
-                                <div th:text="${entry.value}"></div>
-                            </div>
+                    <div id="selectItem">
+                        <div class="initialItem" th:if="${initialItemStay != null}" th:each="A : ${initialItemStay}" style="display:none;">
+                            <div class="initialStayName" th:text="${A.touristSpotName}"></div>
+                            <div class="initialLocal" th:text="${A.address}"></div>
+                            <div class="initialId" th:text="${A.id}"></div>
                         </div>
-                        <input style="width:50px;margin: auto 0;" type="checkbox" id="locationCheckBox1" class="location-checkbox">
+                        <div class="initialItem2" th:if="${initItemEntityStay != null}" th:each="B : ${initItemEntityStay}" style="display:none;">
+                            <div class="initialStayName" th:text="${B.touristSpotName}"></div>
+                            <div class="initialLocal" th:text="${B.address}"></div>
+                            <div class="initialId" th:text="${B.id}"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="height:100px;width:600px;display:flex;justify-content:center;align-items:center;">
+                    <div style="width:500px;height:50px;display:flex;align-items:center;background-color:#004392;border:3px solid white;border-radius:10px;">
+                        <input style="width:100%;height:100%;border:none;" type="text" id="locationInput" placeholder="원하시는 특징 또는 이름을 검색하세요">
+                        <button id="searchButton" style="width:70px;height:100%;color:white;font-size:30px;font-weight:bold;background:black;border-left:1px solid white;border-top-right-radius: 10px;border-bottom-right-radius: 10px;" type="button" ><i class="bi bi-search"></i></button>
+                    </div>
+                </div>
+
+                <div id="lcBox">
+                    <div id="locationList">
+                        <div th:each="stay : ${adminItemEntity}" th:if="${stay != null}" class="contents" th:attr="data-content-type=${stay.contentType}" style="height:115px;width:500px; display:flex; justify-content:left; align-items:center; border-radius:10px;background-color: rgba(0, 117, 255, 0.5); margin-bottom:10px;">
+                            <div class="stay-image" th:style="'margin:10px; border-radius:8px; width:120px; height:100px; background-image: url(' + ${stay.imgUrl} + '); background-position:center; background-size:cover;'"></div>
+                            <div class="stay-details" style="display:flex; justify-content:start;flex-wrap:wrap; padding-right:20px;width:450px;">
+                                <p class="stay-name" th:text="${stay.touristSpotName}" for="locationCheckBox1" th:value="${stay.id}"></p>
+                                <p class="stay-features" th:text="${stay.features}" style="color:white;font-size:15px;padding:0;margin:0;"></p>
+                                <p class="D" th:text="${stay.id}" style="display:none;"></p>
+                                <p class="stay-address" th:text="${stay.address}" style="display:none;"></p>
+                                <p class="stay-contact" th:text="${stay.contact}" style="display:none;"></p>
+                                <div class="day-time-entry" th:each="entry : ${stay.businessHours}" style="display:none">
+                                    <label th:text="${entry.key}"></label>
+                                    <div th:text="${entry.value}"></div>
+                                </div>
+                            </div>
+                            <input style="width:50px;margin: auto 0;" type="checkbox" id="locationCheckBox1" class="location-checkbox">
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- 모달 -->
-    <div id="modal" class="modal-content" style="display:none; position:absolute; top:15%; left:20%; justify-content:center;">
-        <div class="modal-header" style="width:90%;">
-            <button type="button" class="close-btn btn-secondary" onclick="closeModal()"><i class="bi bi-x-lg"></i></button>
-        </div>
-        <div class="modal-body">
-            <div class="modal_input">
-                <div style="height: 400px; display: flex; justify-content: center; align-items: center;">
-                    <img id="imageInput" style="width: 90%; margin-left:30px; height:100%; border-radius:15px;cursor: pointer;">
-                </div>
+        <!-- 모달 -->
+        <div id="modal" class="modal-content" style="display:none; position:absolute; top:15%; left:20%; justify-content:center;">
+            <div class="modal-header" style="width:90%;">
+                <button type="button" class="close-btn btn-secondary" onclick="closeModal()"><i class="bi bi-x-lg"></i></button>
             </div>
-            <div class="modal_input">
-                <div style="margin: 20px 0;"><h2 id="touristSpotName"></h2></div>
-                <div style="height: 90px; width: 100%; font-family: 'LINE Seed Sans KR'; display: flex; flex-direction:column; align-items:center; justify-content: center; flex-wrap: wrap; margin: 10px;">
-                    <p style="font-size: 30px; margin: 0;">주소</p>
-                    <!--                        <input type="text" id="modalAddress" name="address" style="width: 100%; font-size: 15px;" readonly>-->
-                    <h3 id="modalAddress" style="font-size: 15px;"></h3>
-                </div>
-
-                <div style="height: 90px; width: 100%; font-family: 'LINE Seed Sans KR'; display: flex; flex-direction:column; align-items:center;justify-content: center; flex-wrap: wrap; margin: 10px;">
-                    <p style="font-size: 30px; margin: 0;">연락처</p>
-                    <!--                        <input type="text" id="modalContact" name="contact" style="width: 100%; font-size: 15px;" readonly>-->
-                    <div id="modalContact" style="font-size: 15px; margin-top:5px;"></div>
-                </div>
-
-                <div style="height: 270px; width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                    <div style="width: 100%; height: 40px; margin: 10px 0; display: flex; justify-content: center;">
-                        <p style="font-size: 30px; text-align: center;">영업시간</p>
-                    </div>
-                    <div id="modalBusinessHours" style="width: 100%; height: 230px; padding: 20px auto; text-align: center;">
+            <div class="modal-body">
+                <div class="modal_input">
+                    <div style="height: 400px; display: flex; justify-content: center; align-items: center;">
+                        <img id="imageInput" style="width: 90%; margin-left:30px; height:100%; border-radius:15px;cursor: pointer;">
                     </div>
                 </div>
+                <div class="modal_input">
+                    <div style="margin: 20px 0;"><h2 id="touristSpotName"></h2></div>
+                    <div style="height: 90px; width: 100%; font-family: 'LINE Seed Sans KR'; display: flex; flex-direction:column; align-items:center; justify-content: center; flex-wrap: wrap; margin: 10px;">
+                        <p style="font-size: 30px; margin: 0;">주소</p>
+                        <!--                        <input type="text" id="modalAddress" name="address" style="width: 100%; font-size: 15px;" readonly>-->
+                        <h3 id="modalAddress" style="font-size: 15px;"></h3>
+                    </div>
+
+                    <div style="height: 90px; width: 100%; font-family: 'LINE Seed Sans KR'; display: flex; flex-direction:column; align-items:center;justify-content: center; flex-wrap: wrap; margin: 10px;">
+                        <p style="font-size: 30px; margin: 0;">연락처</p>
+                        <!--                        <input type="text" id="modalContact" name="contact" style="width: 100%; font-size: 15px;" readonly>-->
+                        <div id="modalContact" style="font-size: 15px; margin-top:5px;"></div>
+                    </div>
+
+                    <div style="height: 270px; width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                        <div style="width: 100%; height: 40px; margin: 10px 0; display: flex; justify-content: center;">
+                            <p style="font-size: 30px; text-align: center;">영업시간</p>
+                        </div>
+                        <div id="modalBusinessHours" style="width: 100%; height: 230px; padding: 20px auto; text-align: center;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
             </div>
         </div>
-        <div class="modal-footer">
-        </div>
-    </div>
 
-    <div style="width:11%;height:100%;background:#000A67;display:flex;flex-direction:column; justify-content:space-between;align-items:center;">
-        <div style="margin-top:50px;">
+        <div style="width:11%;height:100%;background:#000A67;display:flex;flex-direction:column; justify-content:space-between;align-items:center;">
+            <div style="margin-top:50px;">
+                <div style="cursor:pointer;width:150px;height:80px;background-color:white;border-radius:10px;display:flex;justify-content:center;align-items:center;margin-bottom:30px;">
+                    <button type="button" id="scheduleButton" style="color:black;background:none;border:none;font-size:30px;font-family:LINE Seed Sans KR;font-weight:bold;text-decoration: none;">일정</button>
+                </div>
+                <div style="cursor:pointer;width:150px;height:80px;background-color:white;border-radius:10px;display:flex;justify-content:center;align-items:center;margin-bottom:30px;">
+                    <a href="/schedulers/second" id="localButton2" style="color:black;background:none;border:none;font-size:30px;font-family:LINE Seed Sans KR;font-weight:bold;text-decoration: none;">관광지</a>
+                </div>
+                <div style="cursor:pointer;width:150px;height:80px;background-color:white;border-radius:10px;display:flex;justify-content:center;align-items:center;margin-bottom:30px;">
+                    <a href="/schedulers/third" id="localButton3" style="color:black;background:none;border:none;font-size:30px;font-family:LINE Seed Sans KR;font-weight:bold;text-decoration: none;">명소/식당</a>
+                </div>
+            </div>
             <div style="cursor:pointer;width:150px;height:80px;background-color:white;border-radius:10px;display:flex;justify-content:center;align-items:center;margin-bottom:30px;">
-                <button type="button" id="scheduleButton" style="color:black;background:none;border:none;font-size:30px;font-family:LINE Seed Sans KR;font-weight:bold;text-decoration: none;">일정</button>
-            </div>
-            <div style="cursor:pointer;width:150px;height:80px;background-color:white;border-radius:10px;display:flex;justify-content:center;align-items:center;margin-bottom:30px;">
-                <a href="/schedulers/second" id="localButton2" style="color:black;background:none;border:none;font-size:30px;font-family:LINE Seed Sans KR;font-weight:bold;text-decoration: none;">관광지</a>
-            </div>
-            <div style="cursor:pointer;width:150px;height:80px;background-color:white;border-radius:10px;display:flex;justify-content:center;align-items:center;margin-bottom:30px;">
-                <a href="/schedulers/third" id="localButton3" style="color:black;background:none;border:none;font-size:30px;font-family:LINE Seed Sans KR;font-weight:bold;text-decoration: none;">명소/식당</a>
+                <button type="submit" onclick="saveSelectedLocations()" style="background-color: white; border: none; cursor: pointer; color:black;font-size:30px;font-family:LINE Seed Sans KR;">결과보기</button>
             </div>
         </div>
-        <div style="cursor:pointer;width:150px;height:80px;background-color:white;border-radius:10px;display:flex;justify-content:center;align-items:center;margin-bottom:30px;">
-            <button type="submit" onclick="saveSelectedLocations()" style="background-color: white; border: none; cursor: pointer; color:black;font-size:30px;font-family:LINE Seed Sans KR;">결과보기</button>
-        </div>
-    </div>
-</form>
-<script type="module"  src="/javascript/scheduler/map3.js"></script>
-<script>
-$(document).ready(function() {
-    let currentContentType = "숙박"; // 초기에는 "숙박"으로 설정
-    let selectedTransportation = "MassTransit"; // 선택된 Transportation 값
-    const form = document.querySelector("form");
+    </form>
+    <script type="module"  src="/javascript/scheduler/map3.js"></script>
+    <script>
+        $(document).ready(function() {
+            let currentContentType = "숙박"; // 초기에는 "숙박"으로 설정
+            let selectedTransportation = "MassTransit"; // 선택된 Transportation 값
+            const form = document.querySelector("form");
 
-    form.addEventListener("submit", (event) => {
-     const selectedItems = document.querySelectorAll(".selected-item");
+            form.addEventListener("submit", (event) => {
+             const selectedItems = document.querySelectorAll(".selected-item");
 
-     // 선택된 항목이 없는 경우 폼 제출 중지 및 알림창 표시
-     if (selectedItems.length === 0) {
-       event.preventDefault(); // 폼 제출 중지
-       alert("한개 이상 골라주세요.");
-     }
-   });
+             // 선택된 항목이 없는 경우 폼 제출 중지 및 알림창 표시
+             if (selectedItems.length === 0) {
+               event.preventDefault(); // 폼 제출 중지
 
-    // 페이지가 로드되면 모든 contents 숨기기
-    $('.contents').hide();
+               // 알림창 표시
+               alert("한개 이상 골라주세요.");
+             }
 
-    // 초기에 선택된 contentType에 해당하는 contents만 보이기
-    showContentsByType(currentContentType);
+              // 선택된 항목의 수가 여행 일수와 일치하지 않을 때
+            if (!saveSelectedLocations()) {
+                event.preventDefault(); // 폼 제출 중지
+            }
+           });
 
-    // .selected-item 클릭 이벤트 처리
-    $('.selected-item').click(function() {
-        // 클릭된 아이템의 data-location 값을 가져옴
-        const locationText = $(this).attr('data-location');
+            // 페이지가 로드되면 모든 contents 숨기기
+            $('.contents').hide();
 
-        // 위치 입력란에 선택된 아이템의 위치 정보 설정
-        $('#locationInput').val(locationText);
+            // 초기에 선택된 contentType에 해당하는 contents만 보이기
+            showContentsByType(currentContentType);
 
-        // 위치에 따라 해당하는 컨텐츠를 보여줄 수 있도록 검색 함수 호출
-        const contentType = "명소"; // 현재는 "명소"로 하드코딩, 실제로는 선택된 컨텐츠 유형에 따라 다르게 처리
-        searchLocation(contentType); // 위치에 따라 해당 컨텐츠 검색 실행
-    });
+            // .selected-item 클릭 이벤트 처리
+            $('.selected-item').click(function() {
+                // 클릭된 아이템의 data-location 값을 가져옴
+                const locationText = $(this).attr('data-location');
 
-    // 위치 입력란인 locationInput에서 Enter 키 입력 처리
-    $('#locationInput').keypress(function(e) {
-        if (e.which === 13) { // Enter 키가 눌렸는지 확인
-            e.preventDefault(); // 기본 동작(폼 제출) 방지
-            searchLocation(currentContentType); // 사용자 정의 검색 동작 실행
-        }
-    });
+                // 위치 입력란에 선택된 아이템의 위치 정보 설정
+                $('#locationInput').val(locationText);
 
-    // 검색 버튼 클릭 시 검색 이벤트 처리
-    $('#searchButton').click(function() {
-        searchLocation(currentContentType); // 현재 contentType에 따라 검색 실행
-    });
+                // 위치에 따라 해당하는 컨텐츠를 보여줄 수 있도록 검색 함수 호출
+                const contentType = "명소"; // 현재는 "명소"로 하드코딩, 실제로는 선택된 컨텐츠 유형에 따라 다르게 처리
+                searchLocation(contentType); // 위치에 따라 해당 컨텐츠 검색 실행
+            });
 
-    // .selected-item 클릭 시 검색 이벤트 처리
-    $(document).on('click', '.selected-item', function() {
-        const locationText = $(this).attr('data-location'); // 클릭된 아이템의 위치 정보 가져오기
-        $('#locationInput').val(locationText); // 위치 입력란에 선택된 아이템의 위치 정보 설정
-        searchLocation(currentContentType); // 위치에 따라 해당 컨텐츠 검색 실행
-    });
-    // 버튼 클릭 시 이벤트 처리
-    $(".Transportation").click(function() {
-        const value = $(this).val(); // 클릭된 버튼의 value 값
+            // 위치 입력란인 locationInput에서 Enter 키 입력 처리
+            $('#locationInput').keypress(function(e) {
+                if (e.which === 13) { // Enter 키가 눌렸는지 확인
+                    e.preventDefault(); // 기본 동작(폼 제출) 방지
+                    searchLocation(currentContentType); // 사용자 정의 검색 동작 실행
+                }
+            });
 
-        // 이전에 선택된 버튼 스타일 초기화
-        $(".Transportation").css({
-            "background": "none",
-            "color": "#717FFF"
+            // 검색 버튼 클릭 시 검색 이벤트 처리
+            $('#searchButton').click(function() {
+                searchLocation(currentContentType); // 현재 contentType에 따라 검색 실행
+            });
+
+            // .selected-item 클릭 시 검색 이벤트 처리
+            $(document).on('click', '.selected-item', function() {
+                const locationText = $(this).attr('data-location'); // 클릭된 아이템의 위치 정보 가져오기
+                $('#locationInput').val(locationText); // 위치 입력란에 선택된 아이템의 위치 정보 설정
+                searchLocation(currentContentType); // 위치에 따라 해당 컨텐츠 검색 실행
+            });
+            // 버튼 클릭 시 이벤트 처리
+            $(".Transportation").click(function() {
+                const value = $(this).val(); // 클릭된 버튼의 value 값
+
+                // 이전에 선택된 버튼 스타일 초기화
+                $(".Transportation").css({
+                    "background": "none",
+                    "color": "#717FFF"
+                });
+
+                // 클릭된 버튼 스타일 변경
+                $(this).css({
+                    "background": "#717FFF",
+                    "color": "white"
+                });
+
+                // 선택된 Transportation 값 업데이트
+                selectedTransportation = value;
+            });
+
+            $('.stay-image').click(function() {
+                // 모달에 표시될 정보 추출
+                const imgUrl = $(this).css('background-image');
+                const touristSpotName = $(this).siblings('.stay-details').find('.stay-name').text();
+                const contact = $(this).siblings('.stay-details').find('.stay-contact').text();
+                const address = $(this).siblings('.stay-details').find('.stay-address').text();
+                const businessHours = $(this).siblings('.stay-details').find('.day-time-entry').map(function() {
+                    return $(this).find('label').text() + ': ' + $(this).find('div').text();
+                }).get().join('<br>'); // 각 businessHour를 줄바꿈으로 연결하여 표시
+
+
+                // 이미지 URL 추출
+                const imageUrl = imgUrl.slice(5, -2); // "url('...')" 형식에서 URL만 추출
+                // 모달에 정보 설정
+                $('#imageInput').attr('src', imageUrl); // src 속성 설정
+                $('#touristSpotName').text(touristSpotName);
+                $('#modalContact').text(contact);
+                $('#modalAddress').text(address);
+                $('#modalBusinessHours').html(businessHours);
+
+                // 모달 창 보이기
+                $('#modal').show();
+            });
+
+            // 모달 창 닫기 버튼 클릭 이벤트 처리
+            $('.close-btn').click(function() {
+                $('#modal').hide();
+            });
+
+            // '일정' 버튼 클릭 시
+            $("#scheduleButton").click(function() {
+                // first.html 페이지로 이동
+                window.location.href = "/schedulers/first";
+            });
+
+            // Handle click event for '관광지' button
+            $("#localButton").click(function() {
+                window.location.href = "/schedulers/second";
+            });
+
+            // Handle click event for '명소/식당' button
+            $("#localButton").click(function() {
+                window.location.href = "/schedulers/third";
+            });
         });
+        function searchLocation(contentType) {
+            const searchTerm = $('#locationInput').val().trim().toLowerCase();
 
-        // 클릭된 버튼 스타일 변경
-        $(this).css({
-            "background": "#717FFF",
-            "color": "white"
-        });
+            // 모든 contents 숨기기
+            $('.contents').hide();
 
-        // 선택된 Transportation 값 업데이트
-        selectedTransportation = value;
-    });
+            // contentType에 해당하는 contents 중 검색어와 일치하는 항목만 보이기
+            $(`.contents[data-content-type="${contentType}"]`).each(function() {
+                const stayName = $(this).find('.stay-name').text().trim().toLowerCase();
+                const stayFeatures = $(this).find('.stay-features').text().trim().toLowerCase();
+                const stayParent = $(this);
 
-    $('.stay-image').click(function() {
-        // 모달에 표시될 정보 추출
-        const imgUrl = $(this).css('background-image');
-        const touristSpotName = $(this).siblings('.stay-details').find('.stay-name').text();
-        const contact = $(this).siblings('.stay-details').find('.stay-contact').text();
-        const address = $(this).siblings('.stay-details').find('.stay-address').text();
-        const businessHours = $(this).siblings('.stay-details').find('.day-time-entry').map(function() {
-            return $(this).find('label').text() + ': ' + $(this).find('div').text();
-        }).get().join('<br>'); // 각 businessHour를 줄바꿈으로 연결하여 표시
+                if (stayName.includes(searchTerm) || stayFeatures.includes(searchTerm)) {
+                    stayParent.show();
+                }
+            });
 
-
-        // 이미지 URL 추출
-        const imageUrl = imgUrl.slice(5, -2); // "url('...')" 형식에서 URL만 추출
-        // 모달에 정보 설정
-        $('#imageInput').attr('src', imageUrl); // src 속성 설정
-        $('#touristSpotName').text(touristSpotName);
-        $('#modalContact').text(contact);
-        $('#modalAddress').text(address);
-        $('#modalBusinessHours').html(businessHours);
-
-        // 모달 창 보이기
-        $('#modal').show();
-    });
-
-    // 모달 창 닫기 버튼 클릭 이벤트 처리
-    $('.close-btn').click(function() {
-        $('#modal').hide();
-    });
-
-    // '일정' 버튼 클릭 시
-    $("#scheduleButton").click(function() {
-        // first.html 페이지로 이동
-        window.location.href = "/schedulers/first";
-    });
-
-    // Handle click event for '관광지' button
-    $("#localButton").click(function() {
-        window.location.href = "/schedulers/second";
-    });
-
-    // Handle click event for '명소/식당' button
-    $("#localButton").click(function() {
-        window.location.href = "/schedulers/third";
-    });
-});
-function saveSelectedLocations() {
-    const dayDifference = calculateTravelDuration(); // 여행 기간을 계산하고 반환된 값 저장
-    const selectedItems = document.querySelectorAll(".selected-item");
-
-    // 선택된 항목의 수 세기
-    const selectedItemCount = selectedItems.length;
-
-    // 선택된 명소와 식당의 수가 조건을 만족하는지 확인
-    if (selectedItemCount < 1 * dayDifference) {
-        alert("하루에 숙박 1개를 선택해야 합니다.");
-        return false; // 폼 제출 중지
-    }
-
-    return true; // 선택된 항목이 조건을 만족하면 true 반환
-}
-
-function calculateTravelDuration() {
-    // DurationStart와 DurationEnd의 값을 JavaScript 변수로 가져오기
-    const durationStart = $('#DurationStart').val();
-    const durationEnd = $('#DurationEnd').val();
-
-    // 현재 년도 가져오기
-    const currentYear = new Date().getFullYear();
-
-    // Date 객체 생성
-    const startDate = new Date(`${currentYear}-${parseDate(durationStart)}`);
-    const endDate = new Date(`${currentYear}-${parseDate(durationEnd)}`);
-
-    // DurationStart와 DurationEnd 사이의 일수 계산
-    const timeDifference = endDate.getTime() - startDate.getTime();
-    const dayDifference = Math.ceil(timeDifference / (1000 * 3600 * 24)); // 밀리초로 계산된 차이를 일수로 변환
-
-    return dayDifference;
-}
-
-function parseDate(dateString) {
-    const [monthStr, dayStr] = dateString.split(' ');
-    const month = monthStr.replace('월', '').padStart(2, '0');
-    const day = dayStr.replace('일', '').padStart(2, '0');
-    return `${month}-${day}`;
-}
-function showContentsByType(contentType) {
-    // 모든 contents 숨기기
-    $('.contents').hide();
-
-    // 선택된 contentType에 해당하는 contents만 보이기
-    $(`.contents[data-content-type="${contentType}"]`).show();
-}
-function searchLocation(contentType) {
-    const searchTerm = $('#locationInput').val().trim().toLowerCase();
-
-    // 모든 contents 숨기기
-    $('.contents').hide();
-
-    // contentType에 해당하는 contents 중 검색어와 일치하는 항목만 보이기
-    $(`.contents[data-content-type="${contentType}"]`).each(function() {
-        const stayName = $(this).find('.stay-name').text().trim().toLowerCase();
-        const stayFeatures = $(this).find('.stay-features').text().trim().toLowerCase();
-        const stayParent = $(this);
-
-        if (stayName.includes(searchTerm) || stayFeatures.includes(searchTerm)) {
-            stayParent.show();
+            // 검색 후 입력 초기화
+            $('#locationInput').val('');
         }
-    });
 
-    // 검색 후 입력 초기화
-    $('#locationInput').val('');
-}
-</script>
+        function showContentsByType(contentType) {
+            // 모든 contents 숨기기
+            $('.contents').hide();
+
+            // 선택된 contentType에 해당하는 contents만 보이기
+            $(`.contents[data-content-type="${contentType}"]`).show();
+        }
+    </script>
 </div>
 </html>
